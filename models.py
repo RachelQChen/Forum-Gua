@@ -19,7 +19,17 @@ class Channel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     link = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
-    
+
+    def __init__(self, form):
+        # init 里 get 和 验证
+        self.link = form.get('link', '')
+
+    def __repr__(self):
+        return u'<{} {} {}>'.format(self.__class__.__name__, self.id, self.link)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Problem(db.Model):
@@ -33,7 +43,7 @@ class Problem(db.Model):
         self.link = form.get('link', '')
 
     def __repr__(self):
-        return u'<{} {} {}>'.format(self.__class__.name, self.id, self.link)
+        return u'<{} {} {}>'.format(self.__class__.__name__, self.id, self.link)
 
     def save(self):
         db.session.add(self)

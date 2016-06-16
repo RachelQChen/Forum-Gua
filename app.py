@@ -4,32 +4,32 @@ from flask import redirect
 from flask import url_for
 from flask import request
 
-from models import Problem
+from models import Channel
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
-    return redirect(url_for('problem'))
+    return redirect(url_for('channels'))
 
 
-@app.route('/problem/list')
-def problems():
-    problem_list = Problem.query.all()
-    return render_template('problems.html', problems=problem_list)
+@app.route('/channel/list')
+def channels():
+    channel_list = Channel.query.all()
+    return render_template('channels.html', channels=channel_list)
 
 
-@app.route('/problem')
-def problem():
-    return render_template('new_problem.html')
+@app.route('/channel')
+def channel_view():
+    return render_template('new_channel.html')
 
 
-@app.route('/problem/new', methods=['POST'])
-def problem_new():
-    p = Problem(request.form)
-    p.save()
-    return redirect(url_for('problem'))
+@app.route('/channel/new', methods=['POST'])
+def channel_new():
+    c = Channel(request.form)
+    c.save()
+    return redirect(url_for('channel_view'))
 
 
 if __name__ == '__main__':
