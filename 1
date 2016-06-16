@@ -1,0 +1,275 @@
+    1  apt-get install apache2
+    2  php
+   12  cd
+   13  cd /etc/apache2/
+   15  vi apache2.conf 
+   20  wget  http://bbs.startbbs.com/uploads/versions/startbbs_v1.2.3.zip
+   21  unzip startbbs_v1.2.3.zip 
+   22  apt-get install unzip
+   23  unzip startbbs_v1.2.3.zip 
+   24  ls
+   25  mv app/ data/ index.php readme.txt robots.txt static/ system/ uploads/ themes/ /tmp/
+   26  ls
+   27  mkdir startbbs
+   28  mv startbbs_v1.2.3.zip startbbs
+   29  cd startbbs/
+   31  unzip startbbs_v1.2.3.zip 
+   32  ls
+   33  mv startbbs_v1.2.3.zip ..
+   36  vi /etc/apache2/apache2.conf 
+   42  ls startbbs
+   52  vi readme.txt 
+   62  ps
+   72  ls -l /etc/web
+   76  cat /etc/php5/apache2/php.ini
+   77  cat /etc/php5/apache2/php.ini | grep extension
+   78  vim /etc/php5/apache2/php.ini
+   81  ls /etc/php5/apache2/
+   82  ls /etc/php5
+   92  ls /etc/php5/apache2/
+   93  cagt /etc/php5/apache2/conf.d/
+   94  cat /etc/php5/apache2/conf.d/
+   95  ls /etc/php5/apache2/conf.d/
+   96  ls /etc/php5/apache2/conf.d/05-opcache.ini 
+   97  cat /etc/php5/apache2/conf.d/05-opcache.ini 
+   98  cat /etc/php5/apache2/conf.d/10-pdo.ini 
+   99  cat /etc/php5/apache2/conf.d/20-
+  100  cat /etc/php5/apache2/conf.d/20-json.ini 
+  101  cat /etc/php5/apache2/conf.d/20-readline.ini 
+  102  cat /etc/php5/apache2/php.ini 
+  103  cat /etc/php5/apache2/php.ini | grep root
+  104  cat /etc/php5/apache2/php.ini | grep dir
+  112  cd /var/www/html/
+  120  grep startbbs hooks/index.html 
+  121  grep startbbs controllers/
+  122  grep startbbs controllers/*
+  123  ls
+  124  ls co
+  125  ls core/
+  126  vi core/index.html 
+  127  ls
+  128  ls helpers/
+  129  find . -name "*.php"
+  132  vi config/version.php 
+  140  cd /var/log/apache2/
+  142  cat error.log 
+  152  pushd .
+  162  vi Auth.php 
+  170  fg 2
+  172  vi ../models/user_m.php 
+  178  apache2ctl start
+  179  apache2ctl restart
+  182  vi admin/users.php 
+  192  python
+  200  ls
+  201  vi bbs_user.py 
+  202  python bbs_user.py 
+  203  fg
+  204  python bbs_user.py 
+  205  fg
+  206  python bbs_user.py 
+  207  fg
+  208  python bbs_user.py 
+  209  fg
+  210  python bbs_user.py 
+  211  fg
+  212  python bbs_user.py 
+  213  fg
+  214  python bbs_user.py 
+  215  fg
+  216  python bbs_user.py 
+  217  fg
+  218  python bbs_user.py 
+  219  fg
+  220  python bbs_user.py 
+  221  fg
+  222  python bbs_user.py 
+  223  fg
+  224  python bbs_user.py 
+  225  fg
+  226  python bbs_user.py 
+  227  fg
+  228  python bbs_user.py 
+  229  fg
+  230  vi bbs_user.py 
+  231  python bbs_user.py 
+  232  fg
+  233  python bbs_user.py 
+  234  fg
+  235  vi bbs_user.py 
+  236  python bbs_user.py 
+  237  locale
+  238  apt-get install ttf-wenquanyi
+  239  apa-cache search wenquanyi
+  240  apt-get search wenquanyi
+  241  apt-get install ttf-wqy-microhei
+  242  python bbs_user.py 
+  243  vi bbs_user.py 
+  244  python bbs_user.py 
+  245  vi bbs_user.py 
+  246  cd /var/www/html/
+  247  ls
+  248  cd uploads/
+  249  ls
+  250  cd image/
+  251  ls
+  252  cd 201606/
+  253  ls
+  254  ls -l
+  255  ls -lh
+  256  cd
+  257  cd /var/www/html/app/controllers/admin/
+  258  ls
+  259  vi upl
+  260  ls
+  261  cd ..
+  262  vi upload.php 
+  263  ls
+  264  cd /var/www/html/
+  265  ls
+  266  vi app/controllers/upload.php 
+  267  cd /var/ww
+  268  cd /var/www
+  269  ls
+  270  touch guacode
+  271  cd gua
+  272  rm guacode 
+  273  mkdir guacode
+  274  cd guacode/
+  275  ls
+  276  vi app.wsgi
+  277  ls
+  278  apache2ctl  restart
+  279  history
+  280  vi /etc/apache2/sites-enabled/000-default
+  281  vi /etc/apache2/sites-enabled/000-default.conf 
+  282  cat /var/www/guacode/app.wsgi
+  283  vi /var/log/apache2/error.log 
+  284  ls
+  285  ll
+  286  chmod +x app.wsgi
+  287  vi /var/log/apache2/error.log 
+  288  ls
+  289  python
+  290  apache2ctl restart
+  291  history
+  292  vi /var/log/apache2/error.log 
+  293  vi app.wsgi 
+  294  fg
+  295  vi /var/log/apache2/error.log 
+  296  ls
+  297  ll
+  298  sqlite
+  299  apt-get install sqlite
+  302  apt-get install flask
+  312  ll
+  314  vi /var/log/apache2/error.log 
+  316  tail /var/log/apache2/error.log 
+  317  ls /var/log/apache2/
+  318  ll /var/log/apache2/
+  320  history
+  321  vi /etc/apache2/sites-enabled/000-default.conf 
+  322  tail /var/log/apache2/error.log 
+  323  vi paste.py
+  324  tail /var/log/apache2/error.log 
+  325  ll
+  326  tail /var/log/apache2/error.log 
+  327  vi templates/index.html 
+  328  tail /var/log/apache2/error.log 
+  329  tail /var/log/apache2/
+  330  tail /var/log/apache2/*
+  331  ll /var/log/apache2/*
+  332  ll -h /var/log/apache2/*
+  335  vi /etc/apache2/sites-enabled/000-default.conf 
+  336  curl 127.0.0.1:5000
+  337  curl 127.0.0.1:5000/guacode
+  342  cat /var/www/guacode/static/
+  352  python paste.py
+  358  wget 127.0.0.1:5000
+  359  curl 127.0.0.1:5000
+  362  kill 4825
+  367  kill 4852
+  372  python gua_code.py
+  382  export FLASK_DEBUG=1
+  392  sqlite -v
+  402  python3 paste.py
+  412  python paste.py
+  420  python paste.py
+  421  vim paste.py
+  422  python paste.py
+  423  grep doge.gif *
+  424  grep doge.gif static/8
+  425  grep doge.gif static/*
+  426  grep doge.gif templates/
+  427  grep doge.gif templates/*
+  428  ls
+  429  vim templates/code.html 
+  432  vim templates/code.html 
+  440  cat /etc/apache2/sites-available/000-default.conf 
+  441  cat /etc/apache2/sites-available/default-ssl.conf 
+  442  cd /etc/apache2/sites-available/
+  449  a2enmod
+  450  a2enmod proxy_http
+  451  service apache2 restart
+  452  vim 000-default.conf 
+  453  service apache2 restart
+  455  cat /var/log/apache2/error.log 
+  462  vim paste.py
+  472  ls ../index.html
+  482  curl 127.0.0.1:5000
+  492  kill 6082
+  502  vim templates/code.html 
+  512  vim paste.py
+  520  cd /var/www/guacode/
+  521  vim /etc/apache2/sites-available/000-default.conf 
+  522  service apache2 restart
+  523  python paste.py
+  524  vim paste.py
+  525  python paste.py
+  526  vim paste.py
+  527  python paste.py
+  528  vim paste.py
+  529  python paste.py
+  532  vim paste.py
+  535  wget 127.0.0.1:5000
+  536  wget 127.0.0.1:5000/guacode
+  537  wget 127.0.0.1:5000/ss
+  538  wget 127.0.0.1:5000/guacode
+  539  wget 127.0.0.1:5000/code
+  542  kill 6873
+  552  vim templates/code.html 
+  562  kill 7250
+  563  kill 7253
+  566  kill 7269
+  570  vim /etc/apache2/sites-available/000-default.conf 
+  572  cat bbs_user.py 
+  582  fg
+  592  python bbs_user.py 
+  598  apache2ctl restart
+  602  python paste.py
+  612  ps |grep python
+  617  thon paste.py >> error.txt 2>&1 &
+  619  python paste.py >> error.txt 2>&1 &
+  620  cat error.txt 
+  621  ps | grep python
+  622  ps aux | grep python
+  623  ps aux | grep apache
+  624  apache2 --version
+  625  apache2 -v
+  626  cd /var/www/html/
+  627  ls
+  628  find . -name "Loader.php"
+  629  vi system/core/Loader.php 
+  632  vi system/database/DB.php 
+  642  cd html/
+  652  ls
+  662  ps ax|grep python
+  672  ps ax|grep mysql
+  682  who
+  692  python app.py 
+  702  python3 app.py 
+  712  ls
+  720  cat log.txt 
+  721  ps ax|grep python3
+  722  killall python3
+  723  history|grep 2&>1
