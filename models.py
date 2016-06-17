@@ -20,7 +20,7 @@ class Model(object):
 
     def __repr__(self):
         class_name = self.__class__.__name__
-        properties = ('{0} = {1}'.format(k, v) for k, v in self.__dict__.items())
+        properties = (u'{0} = {1}'.format(k, v) for k, v in self.__dict__.items())
         return u'\n<{0}:\n  {1}\n'.format(class_name, '\n   '.join(properties))
 
 
@@ -33,7 +33,6 @@ class Channel(db.Model, Model):
     def __init__(self, form):
         # init 里 get 和 验证
         self.name = form.get('name', '')
-
 
     def channel_row(self):
         cr = {
@@ -62,7 +61,6 @@ class Post(db.Model, Model):
         # init 里 get 和 验证
         self.body = form.get('body', '')
         self.channel_id = form.get('channel_id', '')
-
 
     def post_row(self):
         plink = '<a href="/post/{}">{}</a>'.format(self.id, self.body)
