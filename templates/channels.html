@@ -5,8 +5,21 @@
     <title>Channels</title>
 </head>
 <body>
-    {% for c in channels %}
-        <p>{{ c.link }}</p>
-    {% endfor %}
+    <table class="pure-table">
+        <thead>
+            <tr>
+                <th>频道</th>
+                <th>创建时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%  for c in channels %}
+                <tr>
+                    <td>{{ c.link | safe }}</td>
+                    <td>{{ c.time }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
