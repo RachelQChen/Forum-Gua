@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+</head>
+<body>
+    <h1>登录</h1>
+    <form class="pure-form" action="/login" method="POST">
+        <input name="username" class="form-control" placeholder="输入用户名" />
+        <br>
+        <input name="password" class="form-control" placeholder="输入密码" />
+        <br>
+        <button class="pure-button pure-button-primary" type="submit">登录</button>
+    </form>
+    <hr>
+    <h1>注册</h1>
+    <form class="pure-form"  action="/register" method="POST">
+        <input name="username" class="form-control" placeholder="用户名(长度大于6)" />
+        <br>
+        <input name="password" class="form-control" placeholder="密码(长度大于3)" />
+        <br>
+        <button class="pure-button pure-button-primary" type="submit">注册</button>
+    </form>
+</body>
+</html>

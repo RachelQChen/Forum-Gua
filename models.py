@@ -18,6 +18,10 @@ class Model(object):
         db.session.add(self)
         db.session.commit()
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
     def __repr__(self):
         class_name = self.__class__.__name__
         properties = (u'{0} = {1}'.format(k, v) for k, v in self.__dict__.items())
@@ -31,6 +35,7 @@ class Channel(db.Model, Model):
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
 
     def __init__(self, form):
+        super(Channel, self).__init__()
         # init 里 get 和 验证
         self.name = form.get('name', '')
 
@@ -58,6 +63,7 @@ class Post(db.Model, Model):
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
 
     def __init__(self, form):
+        super(Post, self).__init__()
         # init 里 get 和 验证
         self.body = form.get('body', '')
         self.channel_id = form.get('channel_id', '')
@@ -69,6 +75,32 @@ class Post(db.Model, Model):
             'time': self.created_time,
         }
         return pr
+
+
+class User(db.Model, Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String())
+    password = db.Column(db.String())
+    created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+
+    def __init__(self, form):
+        super(User, self).__init__()
+        self.username = form.get('username', '')
+        self.password = form.get('password', '')
+
+    def validate_register(self):
+        username_len = len(self.username) >= 6
+        password_len = len(self.password) >= 3
+        return username_len and password_len
+
+    def validate_login(self, user):
+        if isinstance(user, User):
+            username_equals = self.username == user.username
+            password_equals = self.password == user.password
+            return username_equals and password_equals
+        else:
+            return False
 
 
 def backup_db():

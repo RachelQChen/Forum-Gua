@@ -3,11 +3,27 @@ from flask import render_template
 from flask import redirect
 from flask import url_for
 from flask import request
+from flask import make_response
+
+
+from flask import abort
+
+import uuid
 
 from models import Channel
 from models import Post
+from models import User
+
 
 app = Flask(__name__)
+
+cookie_dict = {}
+
+
+def current_user():
+    cid = request.cookies.get('cookie_id')
+    user = cookie_dict.get(cid, None)
+    return user
 
 
 @app.route('/')
@@ -39,7 +55,7 @@ def channel_view(id):
     cs = Channel.query.all()
     # print('channel view: ', c)
     plist = c.post_list()
-    print('post list: ', plist)
+    # print('post list: ', plist)
     return render_template('channel.html', channels=cs, channel=c, posts=plist)
 
 
@@ -56,6 +72,40 @@ def post_new():
 def post_view(id):
     p = Post.query.filter_by(id=id).first()
     return render_template('post.html', post=p)
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    u = User(request.form)
+    user = User.query.filter_by(username=u.username).first()
+    # print(user)
+    if u.validate_login(user):
+        # print('用户登录成功')
+        r = make_response(redirect(url_for('index')))
+        cookie_id = str(uuid.uuid4())
+        cookie_dict[cookie_id] = user
+        r.set_cookie('cookie_id', cookie_id)
+        return r
+    else:
+        # print('用户登录失败')
+        return redirect(url_for('login_view'))
+
+
+@app.route('/login')
+def login_view():
+    return render_template('login.html')
+
+
+@app.route('/register', methods=['POST'])
+def register():
+    u = User(request.form)
+    if u.validate_register():
+        # print('用户注册成功')
+        u.save()
+        return redirect(url_for('login_view'))
+    else:
+        # print('注册失败', request.form)
+        return redirect(url_for('login_view'))
 
 
 if __name__ == '__main__':
