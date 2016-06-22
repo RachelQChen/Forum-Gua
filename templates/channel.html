@@ -49,6 +49,7 @@
             <tr>
                 <th>帖子</th>
                 <th>创建时间</th>
+                <th>管理</th>
             </tr>
             </thead>
             <tbody>
@@ -56,10 +57,10 @@
                 <tr>
                     <td>{{ p.link | safe }}</td>
                     <td>{{ p.time }}</td>
+                    {% if is_admin or p.is_author(user) %}
+                    <td><a href="/post/delete/{{ p.id }}">删除</a></td>
+                    {% endif %}
                 </tr>
-                {% if can_delete %}
-                    <td><a href="/post/delete/{{ p.id }}"></a></td>
-                {% endif %}
             {% endfor %}
             </tbody>
         </table>

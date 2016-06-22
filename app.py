@@ -87,30 +87,36 @@ def channel_view(channel_id):
     plist = c.post_list()
     # print('post list: ', plist)
     user = current_user()
-    can_del = False
-    if is_current_user(user) or is_administrator(user):
-        can_del = True
-    return render_template('channel.html', channels=cs, channel=c, posts=plist, can_delete=can_del)
+    is_admin = is_administrator(user)
+    return render_template('channel.html',
+                           channels=cs, channel=c, posts=plist,
+                           is_admin=is_admin, user=user)
 
 
 @app.route('/post/add', methods=['POST'])
 def post_add():
-    p = Post(request.form)
-    p.save()
-    # print('post_add: ', p)
-    cid = p.channel_id
-    # print('Post_add channel_id', cid)
-    return redirect(url_for('channel_view', channel_id=cid))
+    user = current_user()
+    if user is None:
+        return redirect(url_for('login_view'))
+    else:
+        p = Post(request.form)
+        p.user = user
+        p.save()
+        cid = p.channel_id
+        return redirect(url_for('channel_view', channel_id=cid))
 
 
 @app.route('/post/delete/<post_id>')
 def post_delete(post_id):
     p = Post.query.filter_by(id=post_id).first()
+    cid = p.channel_id
     user = current_user()
-    can_delete = is_current_user(user) or is_administrator(user)
+    can_delete = p.is_author()(user) or is_administrator(user)
+    print('post-delete User: ', user)
+    print('Can delete? ', can_delete)
     if can_delete:
         p.delete()
-        return redirect(url_for('channel_view', channel_id=p.channel_id))
+        return redirect(url_for('channel_view', channel_id=cid))
     else:
         abort(401)
 
@@ -118,34 +124,33 @@ def post_delete(post_id):
 @app.route('/post/<post_id>')
 def post_view(post_id):
     p = Post.query.filter_by(id=post_id).first()
-    user = current_user()
-    is_curr = user is not None
-    return render_template('post.html', post=p, is_current_user=is_curr)
+    u = current_user()
+    is_admin = is_administrator(u)
+    return render_template('post.html', post=p, user=u, is_admin=is_admin)
 
 
-@app.route('/post/<post_id>/comment/add', methods=['POST'])
-def comment_add(post_id):
+@app.route('/comment/add', methods=['POST'])
+def comment_add():
     user = current_user()
-    post = Post.query.filter_by(id=post_id).first()
-    print('comment-post: ', post)
     if user is None:
         return redirect(url_for('login_view'))
     else:
         c = Comment(request.form)
         c.user = user
-        c.post = post
         c.save()
-        return redirect(url_for('post_view', post_id=post.id))
+        print('comment-post by form:', c.post)
+        return redirect(url_for('post_view', post_id=c.post_id))
 
 
-@app.route('/post/<post_id>/comment/delete/<comment_id>')
-def comment_delete(post_id, comment_id):
+@app.route('/comment/delete/<comment_id>')
+def comment_delete(comment_id):
     c = Comment.query.filter_by(id=comment_id).first()
+    pid = c.post_id
     user = current_user()
-    can_delete = is_current_user(user) or is_administrator(user)
+    can_delete = c.is_author()(user) or is_administrator(user)
     if can_delete:
         c.delete()
-        return redirect(url_for('post_view', post_id=post_id))
+        return redirect(url_for('post_view', post_id=pid))
     else:
         abort(401)
 

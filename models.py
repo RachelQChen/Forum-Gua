@@ -28,11 +28,36 @@ class Model(object):
         return u'\n<{0}:\n  {1}\n'.format(class_name, '\n   '.join(properties))
 
 
+admins = db.Table(
+    'admins',
+    db.Column('role_id', db.Integer, db.ForeignKey('roles.id')),
+    db.Column('channel_is', db.Integer, db.ForeignKey('channels.id'))
+)
+
+
+class Role(db.Model, Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String())
+    users = db.relationship('User', backref='role', lazy='dynamic')
+    channels = db.relationship('Channel',
+                               secondary=admins,
+                               backref=db.backref('role', lazy='dynamic'),
+                               lazy='dynamic')
+
+    def add_channel(self, channel):
+        self.channels.append(channel)
+
+    def remove_channel(self, channel):
+        self.channels.remove(channel)
+
+
 class Channel(db.Model, Model):
     __tablename__ = 'channels'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+
 
     def __init__(self, form):
         super(Channel, self).__init__()
@@ -75,8 +100,12 @@ class Post(db.Model, Model):
     def post_row(self):
         plink = '<a href="/post/{}">{}</a>'.format(self.id, self.title)
         pr = {
+            'id': self.id,
             'link': plink,
             'time': self.created_time,
+            'author_id': self.user_id,
+            'author': self.user.username,
+            'is_author': self.is_author(),
         }
         return pr
 
@@ -86,6 +115,14 @@ class Post(db.Model, Model):
         for c in comments:
             clist.append(c.comment_row())
         return clist
+
+    def is_author(self):
+        def func(user):
+            if user is None:
+                return False
+            else:
+                return self.user_id == user.id
+        return func
 
 
 class Comment(db.Model, Model):
@@ -99,16 +136,26 @@ class Comment(db.Model, Model):
     def __init__(self, form):
         super(Comment, self).__init__()
         self.content = form.get('content', '')
+        self.post_id = form.get('post_id', None)
 
     def comment_row(self):
         u = User.query.filter_by(id=self.user_id).first()
         user_link = u'<a href="/user/{}">{}</a>'.format(u.id, u.username)
         c = {
+            'id': self.id,
             'user_link': user_link,
             'content': self.content,
+            'is_author': self.is_author(),
         }
         return c
 
+    def is_author(self):
+        def func(user):
+            if user is None:
+                return False
+            else:
+                return self.user_id == user.id
+        return func
 
 
 class User(db.Model, Model):
@@ -119,7 +166,7 @@ class User(db.Model, Model):
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
     sex = db.Column(db.String())
     note = db.Column(db.String())
-    role = db.Column(db.Integer, default=2)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), default=2)
     posts = db.relationship('Post', backref='user', lazy='dynamic')
     comments = db.relationship('Comment', backref='user', lazy='dynamic')
 

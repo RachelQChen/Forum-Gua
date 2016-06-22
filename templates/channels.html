@@ -34,6 +34,9 @@
             <tr>
                 <th>频道</th>
                 <th>创建时间</th>
+                {% if is_admin %}
+                <th>管理</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -42,7 +45,7 @@
                     <td>{{ c.link | safe }}</td>
                     <td>{{ c.time }}</td>
                     {% if is_admin %}
-                        <td><a href="/channel/delete/{{ c.id }}"></a></td>
+                        <td><a href="/channel/delete/{{ c.id }}">删除频道</a></td>
                     {% endif %}
                 </tr>
             {% endfor %}
@@ -50,7 +53,7 @@
     </table>
     {% if is_admin %}
     <form class="pure-form" action="/channel/add" method="post">
-        <textarea name="content" class="form-control" placeholder="创建频道"></textarea>
+        <textarea name="name" class="form-control" placeholder="创建频道"></textarea>
         <br>
         <button class="pure-button pure-button-primary" type="submit">创建</button>
     </form>

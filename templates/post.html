@@ -13,13 +13,16 @@
     {% for c in post.comment_list() %}
     <p>
         {{ c.user_link | safe }}: {{ c.content }}
-        <a href="/post/{{ post.id }}/comment/delete/{{ c.id }}">删除评论</a>
+        {% if is_admin or c.is_author(user) %}
+        <a href="/comment/delete/{{ c.id }}">删除评论</a>
+        {% endif %}
     </p>
     {% endfor %}
-    {% if is_current_user %}
-        <form action="/post/{{ post.id }}/comment/add" method="POST" class="pure-form pure-form-aligned">
+    {% if user is not none %}
+        <form action="/comment/add" method="POST" class="pure-form pure-form-aligned">
             <fieldset>
                 <textarea class="text-link pure-input-1-2" placeholder="添加评论..." name="content" required></textarea>
+                <input type="hidden" name="post_id" value="{{ post.id }}">
                 <button type="submit" class="button-submit pure-button pure-button-primary">提交</button>
             </fieldset>
         </form>
