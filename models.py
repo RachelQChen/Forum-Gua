@@ -29,7 +29,7 @@ class Model(object):
 
 
 class Channel(db.Model, Model):
-    __tablename__ = 'channel'
+    __tablename__ = 'channels'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
@@ -56,25 +56,59 @@ class Channel(db.Model, Model):
 
 
 class Post(db.Model, Model):
-    __tablename__ = 'post'
+    __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String())
     channel_id = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+    title = db.Column(db.String())
+    body = db.Column(db.String())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
     def __init__(self, form):
         super(Post, self).__init__()
         # init 里 get 和 验证
+        self.title = form.get('title', '')
         self.body = form.get('body', '')
         self.channel_id = form.get('channel_id', '')
 
     def post_row(self):
-        plink = '<a href="/post/{}">{}</a>'.format(self.id, self.body)
+        plink = '<a href="/post/{}">{}</a>'.format(self.id, self.title)
         pr = {
             'link': plink,
             'time': self.created_time,
         }
         return pr
+
+    def comment_list(self):
+        comments = Comment.query.filter_by(post_id=self.id)
+        clist = []
+        for c in comments:
+            clist.append(c.comment_row())
+        return clist
+
+
+class Comment(db.Model, Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String())
+    created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    def __init__(self, form):
+        super(Comment, self).__init__()
+        self.content = form.get('content', '')
+
+    def comment_row(self):
+        u = User.query.filter_by(id=self.user_id).first()
+        user_link = u'<a href="/user/{}">{}</a>'.format(u.id, u.username)
+        c = {
+            'user_link': user_link,
+            'content': self.content,
+        }
+        return c
+
 
 
 class User(db.Model, Model):
@@ -83,11 +117,24 @@ class User(db.Model, Model):
     username = db.Column(db.String())
     password = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+    sex = db.Column(db.String())
+    note = db.Column(db.String())
+    role = db.Column(db.Integer, default=2)
+    posts = db.relationship('Post', backref='user', lazy='dynamic')
+    comments = db.relationship('Comment', backref='user', lazy='dynamic')
 
     def __init__(self, form):
         super(User, self).__init__()
         self.username = form.get('username', '')
         self.password = form.get('password', '')
+        self.sex = form.get('sex', 'male')
+        self.note = form.get('note', '')
+
+    def update(self, form):
+        self.username = form.get('username', self.username)
+        self.password = form.get('password', self.password)
+        self.sex = form.get('sex', self.sex)
+        self.note = form.get('note', self.note)
 
     def validate_register(self):
         username_len = len(self.username) >= 6

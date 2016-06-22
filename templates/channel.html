@@ -36,8 +36,9 @@
     </div>
 
     <div class="content pure-u-1 pure-u-md-3-4">
-        <form action="/post/new" method="POST" class="pure-form pure-form-aligned">
+        <form action="/post/add" method="POST" class="pure-form pure-form-aligned">
             <fieldset>
+                <textarea class="pure-input-1-2" placeholder="编辑标题" name="title" required></textarea>
                 <textarea class="text-link pure-input-1-2" placeholder="新帖子..." name="body" required></textarea>
                 <input type="hidden" name="channel_id" value="{{ channel.id }}">
                 <button type="submit" class="button-submit pure-button pure-button-primary">提交</button>
@@ -56,6 +57,9 @@
                     <td>{{ p.link | safe }}</td>
                     <td>{{ p.time }}</td>
                 </tr>
+                {% if can_delete %}
+                    <td><a href="/post/delete/{{ p.id }}"></a></td>
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>

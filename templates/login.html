@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <title>登录页面</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script type="text/javascript">
-        var setup = function() {
+        var setup = function () {
             // 点击 tab, 切换 注册 登录tab
-            $('.co-tab > a').on('click', function() {
+            $('.tab > a').on('click', function () {
                 var self = $(this);
                 console.log('click a');
                 $('.active').removeClass('active');
@@ -18,32 +19,32 @@
             // tab 左右移动
             var tabAction = function (position, showLogin) {
                 console.log(position);
-                $(".co-block").animate({
+                $(".block").animate({
                     "left": position
                 }, "fast");
-                $('#co-form-login').toggle(showLogin);
-                $('#co-form-register').toggle(!showLogin);
+                $('#form-login').toggle(showLogin);
+                $('#form-register').toggle(!showLogin);
             };
 
-            $('#co-tab-register').on('click', function() {
+            $('#tab-register').on('click', function () {
                 var position = '95px';
                 var showLogin = false;
                 tabAction(position, showLogin);
             });
-            $('#co-tab-login').on('click', function() {
+            $('#tab-login').on('click', function () {
                 var position = '159px';
                 var showLogin = true;
                 tabAction(position, showLogin);
             });
         };
 
-        var __main = function() {
+        var __main = function () {
             setup();
             // 选中 register
-            $('#co-tab-register').click();
+            $('#tab-register').click();
         };
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             __main();
         });
     </script>
@@ -53,28 +54,35 @@
             text-decoration: none;
             color: #000;
         }
+
         .active {
             color: dodgerblue;
         }
-        .co-container {
+
+        .container {
             text-align: center;
         }
-        .co-main {
+
+        .main {
             width: 300px;
             margin: auto;
         }
-        .co-header h1 {
+
+        .header h1 {
             font-size: 40px;
             color: dodgerblue;
         }
-        .co-tab {
+
+        .tab {
             margin-top: 30px;
         }
-        .co-tab a {
+
+        .tab a {
             margin: 10px;
             font-size: 20px;
         }
-        .co-block {
+
+        .block {
             margin-top: 5px;
             height: 3px;
             width: 45px;
@@ -86,33 +94,44 @@
     </style>
 </head>
 <body>
-<div class="co-container">
-    <div class="co-main">
-        <div class="co-header">
-            <h1 class="co-title">Cocode BBS</h1>
+<div class="container">
+    <div class="main">
+        <div class="header">
+            <h1 class="title">Cocode BBS</h1>
         </div>
-        <div class="co-form">
-            <div class="co-tab">
-                <a href="#co-form-register" id="co-tab-register">注册</a>
-                <a href="#co-form-login" id="co-tab-login">登录</a>
-                <div class="co-block"></div>
+        <div class="form">
+            <div class="tab">
+                <a href="#form-register" id="tab-register">注册</a>
+                <a href="#form-login" id="tab-login">登录</a>
+                <div class="block"></div>
             </div>
-            <form id="co-form-register" class="pure-form" action="/register" method="POST">
+            <form id="form-login" class="pure-form" action="/login" method="POST">
                 <fieldset class="pure-group">
-                    <input name="username" class="pure-input-1" placeholder="用户名 (不少于6位)" required>
-                    <input name="password" class="pure-input-1" placeholder="密码 (不少于3位)" required>
-                    <button type="submit" class="pure-button pure-input-1 pure-button-primary">注 册</button>
+                    <input name="username" class="pure-input-1" placeholder="输入用户名" required/>
+                    <input name="password" type="password" class="pure-input-1" placeholder="输入密码" required/>
                 </fieldset>
+                <button class="pure-button pure-button-primary pure-input-1" type="submit">登录</button>
             </form>
-            <form id="co-form-login" class="pure-form" action="/login" method="POST">
+            <form id="form-register" class="pure-form" action="/register" method="POST">
                 <fieldset class="pure-group">
-                    <input name="username" class="pure-input-1" placeholder="输入用户名" required>
-                    <input name="password" class="pure-input-1" placeholder="输入密码" required>
-                    <button type="submit" class="pure-button pure-input-1 pure-button-primary">登 录</button>
+                    <input name="username" class="pure-input-1" placeholder="用户名(长度大于6)" required/>
+                    <input name="password" type="password" class="pure-input-1" placeholder="输入密码" required/>
+                    <input name="note" class="pure-input-1" placeholder="个性签名"/>
                 </fieldset>
+                <div>
+                    <label class="checkbox-inline" for="male">
+                        <input type="radio" name="sex" id="male" value="male" checked> 男
+                    </label>
+                    <label class="checkbox-inline" for="female" style="margin-top: 8px;">
+                        <input type="radio" name="sex" id="female" value="female"> 女
+                    </label>
+                </div>
+                <br>
+                <button class="pure-button pure-button-primary pure-input-1" type="submit">注册</button>
             </form>
         </div>
     </div>
+
 </div>
 </body>
 </html>

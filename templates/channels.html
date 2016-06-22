@@ -28,6 +28,7 @@
 
 </head>
 <body>
+    <a href="/login" class="primary-button pure-button">登录</a>
     <table class="pure-table channels-align">
         <thead>
             <tr>
@@ -40,9 +41,19 @@
                 <tr>
                     <td>{{ c.link | safe }}</td>
                     <td>{{ c.time }}</td>
+                    {% if is_admin %}
+                        <td><a href="/channel/delete/{{ c.id }}"></a></td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% if is_admin %}
+    <form class="pure-form" action="/channel/add" method="post">
+        <textarea name="content" class="form-control" placeholder="创建频道"></textarea>
+        <br>
+        <button class="pure-button pure-button-primary" type="submit">创建</button>
+    </form>
+    {% endif %}
 </body>
 </html>

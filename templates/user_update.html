@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User-Update</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+</head>
+<body>
+    <h1>编辑</h1>
+    <form class="pure-form" action="/admin/users/update/{{ user.id }}" method="POST">
+        <fieldset class="pure-group">
+            <input name="username" class="pure-input-1-2" placeholder="用户名"/>{{ user.user_name }}
+            <input name="password" type="password" class="pure-input-1-2" placeholder="输入新密码"/>
+            <input name="note" class="pure-input-1-2" placeholder="编辑个性签名:{{ user.note }}"/>
+        </fieldset>
+        <div>
+            <label class="checkbox-inline" for="male">
+                <input type="radio" name="sex" id="male" value="male" checked> 男
+            </label>
+            <label class="checkbox-inline" for="female" style="margin-top: 8px;">
+                <input type="radio" name="sex" id="female" value="female"> 女
+            </label>
+        </div>
+        <br>
+        <button class="pure-button pure-button-primary pure-input-1-2" type="submit">提交修改</button>
+    </form>
+</body>
+</html>
