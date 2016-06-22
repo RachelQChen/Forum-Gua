@@ -46,6 +46,16 @@ def index():
     return redirect(url_for('channels'))
 
 
+@app.route('/admin/roles')
+def admin_role_view():
+    return render_template('admin_role.html')
+
+
+@app.route('admin/roles', methods=['POST'])
+def admin_role():
+    return redirect(url_for(admin_role_view))
+
+
 @app.route('/channel/list')
 def channels():
     channels = Channel.query.all()
