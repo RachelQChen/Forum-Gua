@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.css" rel="stylesheet">
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -19,7 +20,7 @@
         <br>
         <button class="pure-button pure-button-primary" type="submit">创建</button>
     </form>
-    <form class="form-horizontal" action="/admin/role/list" method="post">
+    <form class="form-horizontal" action="/admin/role/channel" method="post">
         <fieldset>
             <h2>管理角色和板块</h2>
             {% for r in roles %}
@@ -34,7 +35,7 @@
                     {% endfor %}
                 </div>
             {% endfor %}
-            <button type="submit" class="btn btn-success">提交</button>
+            <button type="submit" class="test btn btn-success">提交</button>
         </fieldset>
     </form>
 {% endif %}

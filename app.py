@@ -48,7 +48,7 @@ def index():
 
 
 @app.route('/admin/role/channel')
-def admin_role_channel():
+def admin_role_channel_view():
     rs = Role.query.all()
     cs = Channel.query.all()
     user = current_user()
@@ -60,21 +60,33 @@ def admin_role_channel():
     return r
 
 
-# @app.route('admin/roles', methods=['POST'])
-# def admin_roles():
-#
-#     return redirect(url_for(admin_roles_view))
+@app.route('/admin/role/channel', methods=['POST'])
+def admin_role_channel():
+    rs = Role.query.all()
+    # print('roles: ', rs)
+    for r in rs:
+        # print('加前r.channel: ', r.channels.all())
+        form = request.form
+        # print('加前r-c-form: ', form)
+        r.add_channel(form)
+        r.save()
+        for c in r.channels.all():
+            # print('加后 r.channel: ', r.name, c.name)
+        # print('r.channels: ', r.channels.all())
+    return redirect(url_for('admin_role_channel_view'))
+
+
 @app.route('/role/add', methods=['POST'])
 def role_add():
     user = current_user()
     is_admin = is_administrator(user)
-    print('user:', user)
-    print('Is admin?', is_admin)
+    # print('user:', user)
+    # print('Is admin?', is_admin)
     if is_admin:
         r = Role(request.form)
-        print('new role: ', r)
+        # print('new role: ', r)
         r.save()
-        return redirect(url_for('admin_role_channel'))
+        return redirect(url_for('admin_role_channel_view'))
     else:
         abort(401)
 
@@ -87,21 +99,24 @@ def role_delete(role_id):
         r = Role.query.filter_by(id=role_id).first()
         if r is not None:
             r.delete()
-        return redirect(url_for('admin_role_channel'))
+        return redirect(url_for('admin_role_channel_view'))
     else:
         abort(401)
 
 
 @app.route('/channel/list')
 def channels():
-    channels = Channel.query.all()
-    c_rows = []
-    for c in channels:
-        cr = c.channel_row()
-        c_rows.append(cr)
     user = current_user()
-    is_admin = is_administrator(user)
-    return render_template('channels.html', channels=c_rows, is_admin=is_admin)
+    if user is not None:
+        role = user.role
+        channels = role.channels.all()
+        c_rows = []
+        for c in channels:
+            cr = c.channel_row()
+            c_rows.append(cr)
+        return render_template('channels.html', channels=c_rows)
+    else:
+        return redirect(url_for('login_view'))
 
 
 @app.route('/channel/add', methods=['POST'])
@@ -111,7 +126,7 @@ def channel_add():
     if is_admin:
         c = Channel(request.form)
         c.save()
-        return redirect(url_for('admin_role_channel'))
+        return redirect(url_for('admin_role_channel_view'))
     else:
         abort(401)
 
@@ -132,15 +147,16 @@ def channel_delete(channel_id):
 @app.route('/channel/<channel_id>')
 def channel_view(channel_id):
     c = Channel.query.filter_by(id=channel_id).first()
-    cs = Channel.query.all()
-    # print('channel view: ', c)
     plist = c.post_list()
-    # print('post list: ', plist)
     user = current_user()
-    is_admin = is_administrator(user)
-    return render_template('channel.html',
-                           channels=cs, channel=c, posts=plist,
-                           is_admin=is_admin, user=user)
+    if user is not None:
+        role = user.role
+        cs = role.channels.all()
+        return render_template('channel.html',
+                               channels=cs, channel=c,
+                               posts=plist, user=user)
+    else:
+        return redirect(url_for('login_view'))
 
 
 @app.route('/post/add', methods=['POST'])
@@ -162,8 +178,8 @@ def post_delete(post_id):
     cid = p.channel_id
     user = current_user()
     can_delete = p.is_author()(user) or is_administrator(user)
-    print('post-delete User: ', user)
-    print('Can delete? ', can_delete)
+    # print('post-delete User: ', user)
+    # print('Can delete? ', can_delete)
     if can_delete:
         p.delete()
         return redirect(url_for('channel_view', channel_id=cid))
@@ -188,7 +204,7 @@ def comment_add():
         c = Comment(request.form)
         c.user = user
         c.save()
-        print('comment-post by form:', c.post)
+        # print('comment-post by form:', c.post)
         return redirect(url_for('post_view', post_id=c.post_id))
 
 
@@ -209,16 +225,16 @@ def comment_delete(comment_id):
 def login():
     u = User(request.form)
     user = User.query.filter_by(username=u.username).first()
-    print(user)
+    # print(user)
     if u.validate_login(user):
-        print('用户登录成功, user_id: ', user.id)
+        # print('用户登录成功, user_id: ', user.id)
         r = make_response(redirect(url_for('user_view', user_id=user.id)))
         cookie_id = str(uuid.uuid4())
         cookie_dict[cookie_id] = user
         r.set_cookie('cookie_id', cookie_id)
         return r
     else:
-        print('用户登录失败')
+        # print('用户登录失败')
         return redirect(url_for('login_view'))
 
 
@@ -242,13 +258,13 @@ def register():
 @app.route('/user/<user_id>')
 def user_view(user_id):
     u = User.query.filter_by(id=user_id).first()
-    print ('user-view:', u)
+    # print ('user-view:', u)
     show_update = False
     if is_current_user(u) or is_administrator(u):
         show_update = True
-    print('show_update: ', show_update)
+    # print('show_update: ', show_update)
     html = render_template('user.html', user=u, show_update=show_update)
-    print('user.html: ', html)
+    # print('user.html: ', html)
     return html
 
 
@@ -278,9 +294,9 @@ def user_update_view(user_id):
 @app.route('/admin/users/update/<user_id>', methods=['POST'])
 def user_update(user_id):
     u = User.query.filter_by(id=user_id).first()
-    print('user-update user: ', u)
-    print('Is administrator?', is_administrator(u))
-    print('Is current user?', is_current_user(u))
+    # print('user-update user: ', u)
+    # print('Is administrator?', is_administrator(u))
+    # print('Is current user?', is_current_user(u))
     if is_administrator(u) or is_current_user(u):
         u.update(request.form)
         u.save()
