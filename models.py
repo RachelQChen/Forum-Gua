@@ -45,6 +45,11 @@ class Role(db.Model, Model):
                                backref=db.backref('role', lazy='dynamic'),
                                lazy='dynamic')
 
+    def __init__(self, form):
+        super(Role, self).__init__()
+        # init 里 get 和 验证
+        self.name = form.get('name', '')
+
     def add_channel(self, channel):
         self.channels.append(channel)
 

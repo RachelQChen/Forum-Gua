@@ -39,7 +39,7 @@ def is_administrator(user):
     if user is None:
         return False
     else:
-        return user.role == 1
+        return user.role_id == 1
 
 
 @app.route('/')
@@ -47,21 +47,49 @@ def index():
     return redirect(url_for('channels'))
 
 
-@app.route('/admin/roles')
-def admin_roles_view():
+@app.route('/admin/role/channel')
+def admin_role_channel():
     rs = Role.query.all()
     cs = Channel.query.all()
     user = current_user()
-    is_admin = False
-    if is_administrator(user):
-        is_admin = True
-    return render_template('admin_roles.html', is_admin=is_admin, roles=rs, channels=cs)
+    is_admin = is_administrator(user)
+    # print('user:', user)
+    # print('Is admin?', is_admin)
+    r = render_template('admin.html', is_admin=is_admin, roles=rs, channels=cs)
+    # print('admin-html:/n', r)
+    return r
 
 
 # @app.route('admin/roles', methods=['POST'])
 # def admin_roles():
 #
 #     return redirect(url_for(admin_roles_view))
+@app.route('/role/add', methods=['POST'])
+def role_add():
+    user = current_user()
+    is_admin = is_administrator(user)
+    print('user:', user)
+    print('Is admin?', is_admin)
+    if is_admin:
+        r = Role(request.form)
+        print('new role: ', r)
+        r.save()
+        return redirect(url_for('admin_role_channel'))
+    else:
+        abort(401)
+
+
+@app.route('/role/<role_id>')
+def role_delete(role_id):
+    user = current_user()
+    is_admin = is_administrator(user)
+    if is_admin:
+        r = Role.query.filter_by(id=role_id).first()
+        if r is not None:
+            r.delete()
+        return redirect(url_for('admin_role_channel'))
+    else:
+        abort(401)
 
 
 @app.route('/channel/list')
@@ -78,10 +106,14 @@ def channels():
 
 @app.route('/channel/add', methods=['POST'])
 def channel_add():
-    c = Channel(request.form)
-    c.save()
-    # print('channel_add: ', c)
-    return redirect(url_for('channels'))
+    user = current_user()
+    is_admin = is_administrator(user)
+    if is_admin:
+        c = Channel(request.form)
+        c.save()
+        return redirect(url_for('admin_role_channel'))
+    else:
+        abort(401)
 
 
 @app.route('/channel/delete/<channel_id>')
