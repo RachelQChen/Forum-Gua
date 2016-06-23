@@ -9,7 +9,17 @@
 <body>
 <div class="container">
 {% if is_admin %}
-    <form class="form-horizontal" action="/admin/roles" method="post">
+    <form class="pure-form" action="/role/add" method="post">
+        <textarea name="name" class="form-control" placeholder="增加角色"></textarea>
+        <br>
+        <button class="pure-button pure-button-primary" type="submit">增加</button>
+    </form>
+    <form class="pure-form" action="/channel/add" method="post">
+        <textarea name="name" class="form-control" placeholder="创建频道"></textarea>
+        <br>
+        <button class="pure-button pure-button-primary" type="submit">创建</button>
+    </form>
+    <form class="form-horizontal" action="/admin/role/list" method="post">
         <fieldset>
             <h2>管理角色和板块</h2>
             {% for r in roles %}
