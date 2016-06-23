@@ -14,6 +14,7 @@ from models import Channel
 from models import Post
 from models import User
 from models import Comment
+from models import Role
 
 
 app = Flask(__name__)
@@ -47,13 +48,20 @@ def index():
 
 
 @app.route('/admin/roles')
-def admin_role_view():
-    return render_template('admin_role.html')
+def admin_roles_view():
+    rs = Role.query.all()
+    cs = Channel.query.all()
+    user = current_user()
+    is_admin = False
+    if is_administrator(user):
+        is_admin = True
+    return render_template('admin_roles.html', is_admin=is_admin, roles=rs, channels=cs)
 
 
-@app.route('admin/roles', methods=['POST'])
-def admin_role():
-    return redirect(url_for(admin_role_view))
+# @app.route('admin/roles', methods=['POST'])
+# def admin_roles():
+#
+#     return redirect(url_for(admin_roles_view))
 
 
 @app.route('/channel/list')
