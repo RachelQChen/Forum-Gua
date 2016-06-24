@@ -47,17 +47,17 @@ class Role(db.Model, Model):
         # init 里 get 和 验证
         self.name = form.get('name', '')
 
-    def add_channel(self, form):
-        channels_id = form.getlist(self.name)
-        print('在加channels id: ', channels_id)
-        for cid in channels_id:
-            print('在加cid: ', cid)
-            c = Channel.query.filter_by(id=cid).first()
-            print('在加 channel: ', c.name)
-            self.channels.append(c)
-
-    def remove_channel(self, channel):
-        self.channels.remove(channel)
+    # def add_channel(self, form):
+    #     channels_id = form.getlist(self.name)
+    #     print('在加channels id: ', channels_id)
+    #     for cid in channels_id:
+    #         print('在加cid: ', cid)
+    #         c = Channel.query.filter_by(id=cid).first()
+    #         print('在加 channel: ', c.name)
+    #         self.channels.append(c)
+    #
+    # def remove_channel(self, channel):
+    #     self.channels.remove(channel)
 
 
 class Channel(db.Model, Model):
