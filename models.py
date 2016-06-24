@@ -89,17 +89,19 @@ class Channel(db.Model, Model):
             plist.append(p.post_row())
         return plist
 
-    def add_role(self, form):
-        roles_id = form.getlist(self.name)
-        print('在加roles id: ', roles_id)
-        for rid in roles_id:
-            print('在加cid: ', rid)
+    @staticmethod
+    def update_roles(option_json):
+        for option in option_json:
+            cid = option.get('channel_id')
+            rid = option.get('role_id')
+            checked_status = option.get('checked_status')
+            c = Channel.query.filter_by(id=cid).first()
             r = Role.query.filter_by(id=rid).first()
-            print('在加 role: ', r.name)
-            self.roles.append(r)
-
-    def remove_role(self, role):
-        self.roles.remove(role)
+            if checked_status:
+                c.roles.append(r)
+            else:
+                c.roles.remove(r)
+            c.save()
 
 
 class Post(db.Model, Model):
