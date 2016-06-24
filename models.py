@@ -28,39 +28,18 @@ class Model(object):
         return u'\n<{0}:\n  {1}\n'.format(class_name, '\n   '.join(properties))
 
 
-admins = db.Table(
-    'admins',
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id')),
-    db.Column('channel_id', db.Integer, db.ForeignKey('channels.id'))
-)
-
 
 class Role(db.Model, Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     users = db.relationship('User', backref='role', lazy='dynamic')
-    channels = db.relationship('Channel',
-                               secondary=admins,
-                               backref=db.backref('role', lazy='dynamic'),
-                               lazy='dynamic')
+    channels = db.relationship('Channel', backref='role', lazy='dynamic')
 
     def __init__(self, form):
         super(Role, self).__init__()
         # init 里 get 和 验证
         self.name = form.get('name', '')
-
-    def add_channel(self, form):
-        channels_id = form.getlist(self.name)
-        print('在加channels id: ', channels_id)
-        for cid in channels_id:
-            print('在加cid: ', cid)
-            c = Channel.query.filter_by(id=cid).first()
-            print('在加 channel: ', c.name)
-            self.channels.append(c)
-
-    def remove_channel(self, channel):
-        self.channels.remove(channel)
 
 
 class Channel(db.Model, Model):
@@ -68,7 +47,8 @@ class Channel(db.Model, Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
-
+    roles = db.relationship('Role', backref='role', lazy='dynamic')
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
     def __init__(self, form):
         super(Channel, self).__init__()

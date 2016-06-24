@@ -9,6 +9,7 @@ from flask import abort
 
 
 import uuid
+from flask import json
 
 from models import Channel
 from models import Post
@@ -47,46 +48,71 @@ def index():
     return redirect(url_for('channels'))
 
 
-@app.route('/admin/role/channel')
-def admin_role_channel_view():
+@app.route('/admin')
+def admin_view():
     rs = Role.query.all()
     cs = Channel.query.all()
     user = current_user()
+    if is_administrator(user):
+        return render_template('admin.html', roles=rs, channels=cs)
+    else:
+        abort(401)
+
+
+@app.route('/admin', methods=['POST'])
+def admin():
+    user = current_user()
     is_admin = is_administrator(user)
-    # print('user:', user)
-    # print('Is admin?', is_admin)
-    r = render_template('admin.html', is_admin=is_admin, roles=rs, channels=cs)
-    # print('admin-html:/n', r)
-    return r
+    print('Is admin?', is_admin)
+    if is_admin:
+        j = request.json
+        response_data = []
+        for option in j:
+            cid = option.get('channel_id')
+            rid = option.get('role_id')
+            c = Channel.query.filter_by(id=cid).first()
+            if c is not None:
+                c.role_id = rid
+                c.save()
+                data = {
+                    'channel_id': c.id,
+                    'role_id': c.role_id,
+                    'check_status': True,
+                }
+        return json.dumps(response_data, indent=2)
+    else:
+        abort(401)
 
 
-@app.route('/admin/role/channel', methods=['POST'])
-def admin_role_channel():
-    rs = Role.query.all()
-    # print('roles: ', rs)
-    for r in rs:
-        # print('加前r.channel: ', r.channels.all())
-        form = request.form
-        # print('加前r-c-form: ', form)
-        r.add_channel(form)
-        r.save()
-        for c in r.channels.all():
-            # print('加后 r.channel: ', r.name, c.name)
-        # print('r.channels: ', r.channels.all())
-    return redirect(url_for('admin_role_channel_view'))
 
+@app.route('/random', methods=['POST'])
+def random():
+    # d = request.get_data()
+    # d = json.loads(d.decode('utf-8'))
+    d = request.json
+    print('random', type(d), d)
+    d['fuck'] = 'sb'
+    d['fuck-er'] = 'sbor'
+    return json.dumps(d, indent=2)
+    # return str(d)
 
 @app.route('/role/add', methods=['POST'])
 def role_add():
     user = current_user()
     is_admin = is_administrator(user)
     # print('user:', user)
-    # print('Is admin?', is_admin)
+    print('Is admin?', is_admin)
     if is_admin:
-        r = Role(request.form)
+        j = request.json
+        # print('role-add json', type(d), d)
+        r = Role(j)
         # print('new role: ', r)
         r.save()
-        return redirect(url_for('admin_role_channel_view'))
+        responseData = {
+            'role_name': r.name,
+            'role_id': r.id,
+        }
+        return json.dumps(responseData, indent=2)
     else:
         abort(401)
 
@@ -123,10 +149,16 @@ def channels():
 def channel_add():
     user = current_user()
     is_admin = is_administrator(user)
+    print('Is admin? ', is_admin)
     if is_admin:
-        c = Channel(request.form)
+        j = request.json
+        c = Channel(j)
         c.save()
-        return redirect(url_for('admin_role_channel_view'))
+        responseData = {
+            'channel_name': c.name,
+            'channel_id': c.id,
+        }
+        return json.dumps(responseData, indent=2)
     else:
         abort(401)
 

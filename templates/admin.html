@@ -4,41 +4,131 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        var addRole = function () {
+            $('#id-button-create-role').on('click', function () {
+                $('#id-button-create-role').on('click', function () {
+                    console.log('点击增加角色');
+                    var name = $('#id-text-role-name').val();
+                    console.log('新角色名字: ', name);
+                    var data = {
+                        name: name,
+                    };
+                    postData = JSON.stringify(data);
+                    console.log('postdata: ', postData);
+                    $.ajax({
+                        url: '/role/add',
+                        type: 'POST',
+                        data: postData,
+                        contentType: 'application/json',
+                        success: function (d) {
+                            r = JSON.parse(d);
+                            console.log('add role返回数据: ', r);
+                        }
+                    });
+                })
+            });
+        };
+
+        var addChannel = function () {
+            $('#id-button-create-channel').on('click', function () {
+                $('#id-button-create-channel').on('click', function () {
+                    console.log('点击增加角色');
+                    var name = $('#id-text-channel-name').val();
+                    console.log('新频道名字: ', name);
+                    var data = {
+                        name: name,
+                    };
+                    postData = JSON.stringify(data);
+                    console.log('postdata: ', postData);
+                    $.ajax({
+                        url: '/channel/add',
+                        type: 'POST',
+                        data: postData,
+                        contentType: 'application/json',
+                        success: function (d) {
+                            r = JSON.parse(d);
+                            console.log('add channel返回数据: ', r);
+                        }
+                    });
+                })
+            });
+        };
+
+        var checkRoles = function() {
+            $('#id-button-role-for-channel').on('click', function() {
+                var optionList = [];
+                var roleOptions = $('.choose_role');
+                $.each(roleOptions, function(i, v) {
+{#                    console.log('type v:', typeof v);#}
+{#                    console.log('v', v);#}
+{#                    console.log('$(v)', $(v));#}
+                    checkStatus = $(v).is(':checked');
+                    optionDict = {
+                        channel_id: v.name,
+                        role_id: v.value,
+                        check_status: checkStatus,
+                    };
+                    optionList.push(optionDict);
+                    v.checked = checkStatus;
+                });
+{#                console.log('optionList: ', optionList);#}
+                postData = JSON.stringify(optionList);
+                console.log('post option: ', postData);
+                $.ajax({
+                        url: '/admin',
+                        type: 'POST',
+                        data: postData,
+                        contentType: 'application/json',
+                        success: function (d) {
+                            r = JSON.parse(d);
+                            console.log('check roles 返回数据: ', r);
+                        }
+                    });
+            });
+        };
+
+        var __main = function () {
+            addRole();
+            addChannel();
+            checkRoles();
+        };
+
+        $(document).ready(function () {
+            __main();
+        });
+    </script>
 </head>
 <body>
 <div class="container">
-{% if is_admin %}
-    <form class="pure-form" action="/role/add" method="post">
-        <textarea name="name" class="form-control" placeholder="增加角色"></textarea>
-        <br>
-        <button class="pure-button pure-button-primary" type="submit">增加</button>
-    </form>
-    <form class="pure-form" action="/channel/add" method="post">
-        <textarea name="name" class="form-control" placeholder="创建频道"></textarea>
-        <br>
-        <button class="pure-button pure-button-primary" type="submit">创建</button>
-    </form>
-    <form class="form-horizontal" action="/admin/role/channel" method="post">
-        <fieldset>
-            <h2>管理角色和板块</h2>
-            {% for r in roles %}
-                <div class="control-group">
-                    <label class="control-label">{{ r.name }}</label>
-                    {% for c in channels %}
-                        <div class="controls">
-                            <label class="checkbox">
-                            <input type="checkbox" name="{{ r.name }}" value="{{ c.id }}">{{ c.name }}
-                            </label>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-            <button type="submit" class="test btn btn-success">提交</button>
-        </fieldset>
-    </form>
-{% endif %}
+    <fieldset>
+        <textarea id="id-text-role-name" name="name" class="form-control" placeholder="增加角色"></textarea>
+        <button id="id-button-create-role" class="pure-button pure-button-primary" type="submit">增加</button>
+    </fieldset>
+    <br>
+    <fieldset>
+        <textarea id="id-text-channel-name" name="name" class="form-control" placeholder="创建频道"></textarea>
+        <button id="id-button-create-channel" class="pure-button pure-button-primary">创建</button>
+    </fieldset>
+    <br>
+    <fieldset>
+        <h3>管理角色和板块</h3>
+        {% for c in channels %}
+            <div>
+                {{ c.name }}
+                {% for r in roles %}
+                    <label class="pure-checkbox">
+                        <input class="choose_role" type="checkbox" name="{{ c.id }}" value="{{ r.id }}">
+                        {{ r.name }}
+                    </label>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </fieldset>
+    <button id="id-button-role-for-channel" class="pure-button pure-button-primary">提交</button>
 </div>
 </body>
 </html>
