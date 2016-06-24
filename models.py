@@ -30,8 +30,8 @@ class Model(object):
 
 admins = db.Table(
     'admins',
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id')),
-    db.Column('channel_id', db.Integer, db.ForeignKey('channels.id'))
+    db.Column('channel_id', db.Integer, db.ForeignKey('channels.id')),
+    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'))
 )
 
 
@@ -40,10 +40,7 @@ class Role(db.Model, Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     users = db.relationship('User', backref='role', lazy='dynamic')
-    channels = db.relationship('Channel',
-                               secondary=admins,
-                               backref=db.backref('role', lazy='dynamic'),
-                               lazy='dynamic')
+
 
     def __init__(self, form):
         super(Role, self).__init__()
@@ -68,6 +65,11 @@ class Channel(db.Model, Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+    roles = db.relationship('Role',
+                            secondary=admins,
+                            backref=db.backref('channels', lazy='dynamic'),
+                            lazy='dynamic')
+
 
     def __init__(self, form):
         super(Channel, self).__init__()
@@ -94,14 +96,21 @@ class Channel(db.Model, Model):
         for option in option_json:
             cid = option.get('channel_id')
             rid = option.get('role_id')
+            # print('role id:  ', rid)
             checked_status = option.get('checked_status')
             c = Channel.query.filter_by(id=cid).first()
+            # print('channel: ', c)
             r = Role.query.filter_by(id=rid).first()
+            # print('role:    ', r)
             if checked_status:
                 c.roles.append(r)
+                print('增加', c, r)
             else:
-                c.roles.remove(r)
+                if r in c.roles:
+                    c.roles.remove(r)
+                print('删除', c, r)
         db.session.commit()
+
 
 
 class Post(db.Model, Model):
