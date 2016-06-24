@@ -101,7 +101,7 @@ class Channel(db.Model, Model):
                 c.roles.append(r)
             else:
                 c.roles.remove(r)
-            c.save()
+        db.session.commit()
 
 
 class Post(db.Model, Model):

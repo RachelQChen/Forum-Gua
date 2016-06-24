@@ -65,48 +65,46 @@ def admin():
     is_admin = is_administrator(user)
     print('Is admin?', is_admin)
     if is_admin:
-        j = request.json
+        option_json = request.json
+        Channel.update_roles(option_json)
         response_data = []
-        for option in j:
-            cid = option.get('channel_id')
-            rid = option.get('role_id')
-            c = Channel.query.filter_by(id=cid).first()
-            if c is not None:
-                c.role_id = rid
-                c.save()
+        cs = Channel.query.all()
+        for c in cs:
+            rs = c.roles.all()
+            for r in rs:
                 data = {
                     'channel_id': c.id,
-                    'role_id': c.role_id,
-                    'check_status': True,
+                    'role_id': r.id,
                 }
+                response_data.append(data)
         return json.dumps(response_data, indent=2)
     else:
         abort(401)
 
 
 
-@app.route('/random', methods=['POST'])
-def random():
-    # d = request.get_data()
-    # d = json.loads(d.decode('utf-8'))
-    d = request.json
-    print('random', type(d), d)
-    d['fuck'] = 'sb'
-    d['fuck-er'] = 'sbor'
-    return json.dumps(d, indent=2)
-    # return str(d)
+# @app.route('/random', methods=['POST'])
+# def random():
+#     # d = request.get_data()
+#     # d = json.loads(d.decode('utf-8'))
+#     d = request.json
+#     print('random', type(d), d)
+#     d['fuck'] = 'sb'
+#     d['fuck-er'] = 'sbor'
+#     return json.dumps(d, indent=2)
+#     # return str(d)
+
 
 @app.route('/role/add', methods=['POST'])
 def role_add():
     user = current_user()
     is_admin = is_administrator(user)
-    # print('user:', user)
     print('Is admin?', is_admin)
     if is_admin:
         j = request.json
-        # print('role-add json', type(d), d)
+        print('role-add json', type(j), j)
         r = Role(j)
-        # print('new role: ', r)
+        print('new role: ', r)
         r.save()
         responseData = {
             'role_name': r.name,
@@ -125,7 +123,7 @@ def role_delete(role_id):
         r = Role.query.filter_by(id=role_id).first()
         if r is not None:
             r.delete()
-        return redirect(url_for('admin_role_channel_view'))
+        return redirect(url_for('admin_view'))
     else:
         abort(401)
 
