@@ -58,14 +58,14 @@
             });
         };
 
-        var checkRoles = function() {
-            $('#id-button-role-for-channel').on('click', function() {
+        var checkRoles = function () {
+            $('#id-button-role-for-channel').on('click', function () {
                 var optionList = [];
                 var roleOptions = $('.choose_role');
-                $.each(roleOptions, function(i, v) {
-{#                    console.log('type v:', typeof v);#}
-{#                    console.log('v', v);#}
-{#                    console.log('$(v)', $(v));#}
+                $.each(roleOptions, function (i, v) {
+                    {#                    console.log('type v:', typeof v);#}
+                    {#                    console.log('v', v);#}
+                    {#                    console.log('$(v)', $(v));#}
                     checkStatus = $(v).is(':checked');
                     optionDict = {
                         channel_id: v.name,
@@ -75,19 +75,48 @@
                     optionList.push(optionDict);
                     v.checked = checkStatus;
                 });
-{#                console.log('optionList: ', optionList);#}
+                {#                console.log('optionList: ', optionList);#}
                 postData = JSON.stringify(optionList);
                 console.log('post option: ', postData);
-                $.ajax({
-                        url: '/admin',
-                        type: 'POST',
-                        data: postData,
-                        contentType: 'application/json',
-                        success: function (d) {
-                            r = JSON.parse(d);
-                            console.log('check roles 返回数据: ', r);
-                        }
+
+                var uncheckAll = function () {
+                    $('.choose_role').each(function (i, e) {
+                        console.log(i, e);
+                        var input = $(e);
+                        input.prop('checked', false);
                     });
+                };
+
+                var checkTrueOnes = function (responseData) {
+                    console.log('responseData: ', responseData);
+                    $.each(responseData, function (i, e) {
+                        var channelRole = e;
+                        console.log('channelRoleInput', channelRole);
+                        var cidRid = channelRole['cid-rid'];
+                        console.log('cidRid', cidRid);
+                        $(cidRid).prop('checked', true);
+{#                        var rid = channelRole.role_id;#}
+{#                        console.log('rid', rid);#}
+{#                        var c = $('input[name=cid]');#}
+{#                        console.log('channelInput', c);#}
+{#                        var cr = c.filter('input[value=rid]');#}
+{#                        console.log('channelRole', cr);#}
+{#                        cr.prop('checked', true);#}
+                    });
+                };
+
+                $.ajax({
+                    url: '/admin',
+                    type: 'POST',
+                    data: postData,
+                    contentType: 'application/json',
+                    success: function (d) {
+                        uncheckAll();
+                        r = JSON.parse(d);
+                        console.log('check roles 返回数据: ', r);
+                        checkTrueOnes(r);
+                    }
+                });
             });
         };
 
@@ -121,7 +150,8 @@
                 {{ c.name }}
                 {% for r in roles %}
                     <label class="pure-checkbox">
-                        <input class="choose_role" type="checkbox" name="{{ c.id }}" value="{{ r.id }}">
+                        <input id="id-{{ c.id }}-{{ r.id }}" class="choose_role" type="checkbox" name="{{ c.id }}"
+                               value="{{ r.id }}">
                         {{ r.name }}
                     </label>
                 {% endfor %}

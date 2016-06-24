@@ -72,9 +72,9 @@ def admin():
         for c in cs:
             rs = c.roles.all()
             for r in rs:
+                cid_rid = '#{}-{}'.format(c.id, r.id)
                 data = {
-                    'channel_id': c.id,
-                    'role_id': r.id,
+                    'cid-rid': cid_rid,
                 }
                 response_data.append(data)
         return json.dumps(response_data, indent=2)
