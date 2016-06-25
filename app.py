@@ -17,8 +17,11 @@ from models import User
 from models import Comment
 from models import Role
 
+from rLog import log
 
 app = Flask(__name__)
+
+
 
 cookie_dict = {}
 
@@ -63,7 +66,7 @@ def admin_view():
 def admin():
     user = current_user()
     is_admin = is_administrator(user)
-    print('Is admin?', is_admin)
+    log('Is admin?', is_admin)
     if is_admin:
         option_json = request.json
         Channel.update_roles(option_json)
@@ -88,7 +91,7 @@ def admin():
 #     # d = request.get_data()
 #     # d = json.loads(d.decode('utf-8'))
 #     d = request.json
-#     print('random', type(d), d)
+#     log('random', type(d), d)
 #     d['fuck'] = 'sb'
 #     d['fuck-er'] = 'sbor'
 #     return json.dumps(d, indent=2)
@@ -99,12 +102,12 @@ def admin():
 def role_add():
     user = current_user()
     is_admin = is_administrator(user)
-    print('Is admin?', is_admin)
+    log('Is admin?', is_admin)
     if is_admin:
         j = request.json
-        print('role-add json', type(j), j)
+        log('role-add json', type(j), j)
         r = Role(j)
-        print('new role: ', r)
+        log('new role: ', r)
         r.save()
         responseData = {
             'role_name': r.name,
@@ -147,7 +150,7 @@ def channels():
 def channel_add():
     user = current_user()
     is_admin = is_administrator(user)
-    print('Is admin? ', is_admin)
+    log('Is admin? ', is_admin)
     if is_admin:
         j = request.json
         c = Channel(j)
@@ -208,8 +211,8 @@ def post_delete(post_id):
     cid = p.channel_id
     user = current_user()
     can_delete = p.is_author()(user) or is_administrator(user)
-    # print('post-delete User: ', user)
-    # print('Can delete? ', can_delete)
+    # log('post-delete User: ', user)
+    # log('Can delete? ', can_delete)
     if can_delete:
         p.delete()
         return redirect(url_for('channel_view', channel_id=cid))
@@ -234,7 +237,7 @@ def comment_add():
         c = Comment(request.form)
         c.user = user
         c.save()
-        # print('comment-post by form:', c.post)
+        # log('comment-post by form:', c.post)
         return redirect(url_for('post_view', post_id=c.post_id))
 
 
@@ -255,16 +258,16 @@ def comment_delete(comment_id):
 def login():
     u = User(request.form)
     user = User.query.filter_by(username=u.username).first()
-    # print(user)
+    # log(user)
     if u.validate_login(user):
-        # print('用户登录成功, user_id: ', user.id)
+        # log('用户登录成功, user_id: ', user.id)
         r = make_response(redirect(url_for('user_view', user_id=user.id)))
         cookie_id = str(uuid.uuid4())
         cookie_dict[cookie_id] = user
         r.set_cookie('cookie_id', cookie_id)
         return r
     else:
-        # print('用户登录失败')
+        # log('用户登录失败')
         return redirect(url_for('login_view'))
 
 
@@ -277,24 +280,24 @@ def login_view():
 def register():
     u = User(request.form)
     if u.validate_register():
-        # print('用户注册成功')
+        # log('用户注册成功')
         u.save()
         return redirect(url_for('login_view'))
     else:
-        # print('注册失败', request.form)
+        # log('注册失败', request.form)
         return redirect(url_for('login_view'))
 
 
 @app.route('/user/<user_id>')
 def user_view(user_id):
     u = User.query.filter_by(id=user_id).first()
-    # print ('user-view:', u)
+    # log ('user-view:', u)
     show_update = False
     if is_current_user(u) or is_administrator(u):
         show_update = True
-    # print('show_update: ', show_update)
+    # log('show_update: ', show_update)
     html = render_template('user.html', user=u, show_update=show_update)
-    # print('user.html: ', html)
+    # log('user.html: ', html)
     return html
 
 
@@ -324,9 +327,9 @@ def user_update_view(user_id):
 @app.route('/admin/users/update/<user_id>', methods=['POST'])
 def user_update(user_id):
     u = User.query.filter_by(id=user_id).first()
-    # print('user-update user: ', u)
-    # print('Is administrator?', is_administrator(u))
-    # print('Is current user?', is_current_user(u))
+    # log('user-update user: ', u)
+    # log('Is administrator?', is_administrator(u))
+    # log('Is current user?', is_current_user(u))
     if is_administrator(u) or is_current_user(u):
         u.update(request.form)
         u.save()
