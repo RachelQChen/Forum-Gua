@@ -7,6 +7,8 @@ import time
 import shutil
 import uuid
 
+from rlog import log
+
 db_path = 'models.db'
 app = Flask(__name__)
 app.secret_key = 'asdjf1923'
@@ -220,20 +222,19 @@ class User(db.Model, Model):
         self.note = form.get('note', '')
         self.salt = password_salt()
 
+
+    def hash_password(self, form):
+        print('hash-form: ', form)
         psw = form.get('password', '')
-        self.password_hash = self.hash_password(psw)
-
-
-    def hash_password(self, psw):
-        print('password from form: ', psw)
+        print('password: ', psw)
         hash1 = hashlib.md5(psw.encode('ascii')).hexdigest()
         hash2 = hashlib.md5((hash1 + self.salt).encode('ascii')).hexdigest()
-        return hash2
+        self.password_hash = hash2
 
-    def verify_password(self, user_password):
-        user_psw_hash1 = hashlib.md5(user_password.encode('ascii')).hexdigest()
-        user_psw_hash2 = hashlib.md5((user_psw_hash1 + self.salt).encode('ascii')).hexdigest()
-        return self.password_hash == user_psw_hash2
+    # def verify_password(self, user_password_hash):
+    #     user_psw_hash1 = hashlib.md5(user_password.encode('ascii')).hexdigest()
+    #     user_psw_hash2 = hashlib.md5((user_psw_hash1 + self.salt).encode('ascii')).hexdigest()
+    #     return self.password_hash == user_psw_hash2
 
     def update(self, form):
         self.username = form.get('username', self.username)
@@ -258,9 +259,13 @@ class User(db.Model, Model):
             return False
 
     def validate_login(self, user):
+        log('刚输入的username: ', self.username)
+        log('被对比的username: ', user.username)
+        log('刚输入的psw-hash: ', self.password_hash)
+        log('被对比的psw-hash: ', user.password_hash)
         if isinstance(user, User):
             username_equals = self.username == user.username
-            password_equals = self.verify_password(user.password)
+            password_equals = self.password_hash == user.password_hash
             return username_equals and password_equals
         else:
             return False

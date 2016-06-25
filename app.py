@@ -264,14 +264,17 @@ def login():
     u = User(request.form)
     user = User.query.filter_by(username=u.username).first()
     log('login-user: ', user)
-    if u.validate_login(user):
-        log('用户登录成功, user_id: ', user.id)
-        flash('您已成功登录!')
-        r = make_response(redirect(url_for('user_view', user_id=user.id)))
-        cookie_id = str(uuid.uuid4())
-        cookie_dict[cookie_id] = user
-        r.set_cookie('cookie_id', cookie_id)
-        return r
+    if user is not None:
+        u.salt = user.salt
+        u.hash_password(request.form)
+        if u.validate_login(user):
+            log('用户登录成功, user_id: ', user.id)
+            # flash('您已成功登录!')
+            r = make_response(redirect(url_for('user_view', user_id=user.id)))
+            cookie_id = str(uuid.uuid4())
+            cookie_dict[cookie_id] = user
+            r.set_cookie('cookie_id', cookie_id)
+            return r
     else:
         log('用户登录失败')
         flash('登录失败,请检查您的用户名和密码.')
@@ -286,8 +289,9 @@ def login_view():
 @app.route('/register', methods=['POST'])
 def register():
     form = request.form
+    print('注册form: ', form)
     u = User(form)
-    # u.password_hash = u.hash_password(form)
+    u.hash_password(form)
     if u.validate_register():
         log('用户注册成功')
         u.save()

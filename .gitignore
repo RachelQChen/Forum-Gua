@@ -8,4 +8,10 @@
 *.iml
 out
 gen
+/test.py
+/1
+/1466666914.395417.models.db
+/1466769137.072561.models.db
+/1466764457.068278.models.db
+/1466769125.648285.models.db
 /templates/test.html
