@@ -1,9 +1,8 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import sql
-from werkzeug.security import generate_password_hash
-from werkzeug.security import check_password_hash
 
+import hashlib
 import time
 import shutil
 
@@ -199,6 +198,7 @@ class User(db.Model, Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String())
     password_hash = db.Column(db.String())
+    salt = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
     sex = db.Column(db.String())
     note = db.Column(db.String())
@@ -215,10 +215,14 @@ class User(db.Model, Model):
         self.password_hash = self.hash_password(psw)
 
     def hash_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        hash1 = hashlib.md5(password.encode('ascii')).hexdigest()
+        hash2 = hashlib.md5((hash1 + self.salt).encode('ascii')).hexdigest()
+        self.password_hash = hash2
 
-    def verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    def verify_password(self, user_password):
+        user_psw_hash1 = hashlib.md5(user_password.encode('ascii')).hexdigest()
+        user_psw_hash2 = hashlib.md5((user_psw_hash1 + self.salt).encode('ascii')).hexdigest()
+        return self.password_hash == user_psw_hash2
 
     def update(self, form):
         self.username = form.get('username', self.username)
