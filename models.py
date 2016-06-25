@@ -205,7 +205,7 @@ class User(db.Model, Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String())
     password_hash = db.Column(db.String())
-    salt = db.Column(db.String(), default=password_salt())
+    salt = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
     sex = db.Column(db.String())
     note = db.Column(db.String())
@@ -218,13 +218,17 @@ class User(db.Model, Model):
         self.username = form.get('username', '')
         self.sex = form.get('sex', 'male')
         self.note = form.get('note', '')
+        self.salt = password_salt()
+
         psw = form.get('password', '')
         self.password_hash = self.hash_password(psw)
 
-    def hash_password(self, password):
-        hash1 = hashlib.md5(password.encode('ascii')).hexdigest()
+
+    def hash_password(self, psw):
+        print('password from form: ', psw)
+        hash1 = hashlib.md5(psw.encode('ascii')).hexdigest()
         hash2 = hashlib.md5((hash1 + self.salt).encode('ascii')).hexdigest()
-        self.password_hash = hash2
+        return hash2
 
     def verify_password(self, user_password):
         user_psw_hash1 = hashlib.md5(user_password.encode('ascii')).hexdigest()
@@ -238,10 +242,20 @@ class User(db.Model, Model):
         self.sex = form.get('sex', self.sex)
         self.note = form.get('note', self.note)
 
+    def validate_username(self):
+        if User.query.filter_by(username=self.username).first() is None:
+            return True
+        else:
+            return False
+
+
     def validate_register(self):
         username_len = len(self.username) >= 6
-        password_len = len(self.password) >= 3
-        return username_len and password_len
+        password_len = len(self.password_hash) > 0
+        if self.validate_username():
+            return username_len and password_len
+        else:
+            return False
 
     def validate_login(self, user):
         if isinstance(user, User):

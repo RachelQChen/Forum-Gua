@@ -17,12 +17,12 @@ from models import User
 from models import Comment
 from models import Role
 
-from rLog import log
+from rlog import log
 
 app = Flask(__name__)
 
 
-
+app.secret_key = 'asdjf1923'
 cookie_dict = {}
 
 
@@ -285,7 +285,9 @@ def login_view():
 
 @app.route('/register', methods=['POST'])
 def register():
-    u = User(request.form)
+    form = request.form
+    u = User(form)
+    # u.password_hash = u.hash_password(form)
     if u.validate_register():
         log('用户注册成功')
         u.save()
