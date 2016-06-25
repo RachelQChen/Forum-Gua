@@ -133,6 +133,11 @@
 </head>
 <body>
 <div class="container">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% endfor %}
     <fieldset>
         <textarea id="id-text-role-name" name="name" class="form-control" placeholder="增加角色"></textarea>
         <button id="id-button-create-role" class="pure-button pure-button-primary" type="submit">增加</button>

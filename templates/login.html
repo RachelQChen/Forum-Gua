@@ -131,7 +131,11 @@
             </form>
         </div>
     </div>
-
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
 </div>
 </body>
 </html>
