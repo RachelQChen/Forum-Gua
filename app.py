@@ -4,7 +4,6 @@ from flask import redirect
 from flask import url_for
 from flask import request
 from flask import make_response
-from flask import send_from_directory
 from flask import abort
 from flask import flash
 
@@ -177,7 +176,7 @@ def channel_delete(channel_id):
             c.delete()
         return redirect(url_for('channels'))
     else:
-        flash('不好意思,你没有权限访问此页.')
+        # flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -221,7 +220,7 @@ def post_delete(post_id):
         p.delete()
         return redirect(url_for('channel_view', channel_id=cid))
     else:
-        flash('不好意思,你没有权限访问此页.')
+        # flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -256,7 +255,7 @@ def comment_delete(comment_id):
         c.delete()
         return redirect(url_for('post_view', post_id=pid))
     else:
-        flash('不好意思,你没有权限访问此页.')
+        # flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -325,7 +324,7 @@ def user_delete(user_id):
         u.delete()
         return redirect(url_for('admin_users_view'))
     else:
-        flash('不好意思,你没有权限访问此页.')
+        # flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
