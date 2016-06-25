@@ -93,15 +93,8 @@
                         var channelRole = e;
                         console.log('channelRoleInput', channelRole);
                         var cidRid = channelRole['cid-rid'];
-                        console.log('cidRid', cidRid);
+                        console.log('cidRid', $(cidRid));
                         $(cidRid).prop('checked', true);
-{#                        var rid = channelRole.role_id;#}
-{#                        console.log('rid', rid);#}
-{#                        var c = $('input[name=cid]');#}
-{#                        console.log('channelInput', c);#}
-{#                        var cr = c.filter('input[value=rid]');#}
-{#                        console.log('channelRole', cr);#}
-{#                        cr.prop('checked', true);#}
                     });
                 };
 
@@ -120,7 +113,36 @@
             });
         };
 
+        var onloadView = function () {
+            var cookieList = document.cookie.split(';');
+            console.log('cookie: ', cookieList);
+            $.each(cookieList, function (i, e) {
+                var start = e.substr(1, 13);
+                console.log('start:', start);
+                console.log('type of start: ', typeof (start));
+                console.log('start == "response_data"? ', start == "response_data");
+                if (start == "response_data") {
+                    var responseData = e.split('=')[1];
+                    console.log('response data', responseData);
+                    var respData = responseData.replace(/\\054/g, ',');
+                    console.log('respData: ', respData);
+                    var arr = eval('(' + respData + ')');
+                    console.log('respArr: ', arr);
+                    var jsonData = JSON.parse(arr);
+                    console.log('jsonData:', jsonData);
+                    $.each(jsonData, function(i, e) {
+                        var cidRid = e['cid-rid'];
+                        console.log('cidRid: ', cidRid);
+                        $(cidRid).prop('checked', true)
+                    });
+                } else {
+                    console.log('other cookie startswith: ', start)
+                }
+            });
+        };
+
         var __main = function () {
+            onloadView();
             addRole();
             addChannel();
             checkRoles();
@@ -133,11 +155,11 @@
 </head>
 <body>
 <div class="container">
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-danger">
-        {{ message }}
-    </div>
-    {% endfor %}
+    {#    {% for message in get_flashed_messages() %}#}
+    {#    <div class="alert alert-danger">#}
+    {#        {{ message }}#}
+    {#    </div>#}
+    {#    {% endfor %}#}
     <fieldset>
         <textarea id="id-text-role-name" name="name" class="form-control" placeholder="增加角色"></textarea>
         <button id="id-button-create-role" class="pure-button pure-button-primary" type="submit">增加</button>

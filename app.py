@@ -6,6 +6,7 @@ from flask import request
 from flask import make_response
 from flask import abort
 from flask import flash
+from flask import session
 
 
 import uuid
@@ -57,9 +58,16 @@ def admin_view():
     cs = Channel.query.all()
     user = current_user()
     if is_administrator(user):
-        return render_template('admin.html', roles=rs, channels=cs)
+        data = cookie_dict.get('response_data', '')
+        log('cookie存的data: ', data)
+        json_data = json.dumps(data)
+        log('json_data: ', json_data)
+        r = make_response(render_template('admin.html', roles=rs, channels=cs))
+        log('响应r: ', r)
+        r.set_cookie('response_data', json_data)
+        return r
     else:
-        flash('不好意思,你没有权限访问此页.')
+        # flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -72,19 +80,20 @@ def admin():
         option_json = request.json
         Channel.update_roles(option_json)
         response_data = []
-        cs = Channel.query.all()
-        for c in cs:
-            rs = c.roles.all()
-            for r in rs:
-                cid_rid = '#{}-{}'.format(c.id, r.id)
+        channels = Channel.query.all()
+        for c in channels:
+            roles = c.roles.all()
+            for r in roles:
+                cid_rid = '#id-{}-{}'.format(c.id, r.id)
                 data = {
                     'cid-rid': cid_rid,
                 }
                 response_data.append(data)
+        cookie_dict['response_data'] = response_data
+        log('存了resp-data后的cookie_dict: ', cookie_dict)
         return json.dumps(response_data, indent=2)
     else:
         abort(401)
-
 
 
 # @app.route('/random', methods=['POST'])
@@ -129,7 +138,7 @@ def role_delete(role_id):
             r.delete()
         return redirect(url_for('admin_view'))
     else:
-        flash('不好意思,你没有权限访问此页.')
+        # flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 

@@ -7,6 +7,8 @@
 .idea
 *.iml
 out
+/log.txt
+/1466236412.955643.models.db
 gen
 /test.py
 /1
