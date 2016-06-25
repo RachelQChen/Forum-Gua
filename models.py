@@ -142,13 +142,16 @@ class Post(db.Model, Model):
         self.channel_id = form.get('channel_id', '')
 
     def post_row(self):
-        plink = '<a href="/post/{}">{}</a>'.format(self.id, self.title)
+        u = self.user
+        plink = u'<a href="/post/{}">{}</a>'.format(self.id, self.title)
+        author_link = u'<a href="/user/{}">{}</a>'.format(u.id, u.username)
+        part_content = self.content[:200]
         pr = {
             'id': self.id,
             'link': plink,
             'time': self.created_time,
-            'author_id': self.user_id,
-            'author': self.user.username,
+            'part_content': part_content,
+            'author_link': author_link,
             'is_author': self.is_author(),
         }
         return pr
