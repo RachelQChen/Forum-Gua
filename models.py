@@ -5,6 +5,7 @@ from sqlalchemy import sql
 import hashlib
 import time
 import shutil
+import uuid
 
 db_path = 'models.db'
 app = Flask(__name__)
@@ -12,6 +13,12 @@ app.secret_key = 'asdjf1923'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(db_path)
 
 db = SQLAlchemy(app)
+
+
+def password_salt():
+    random = str(uuid.uuid4())
+    salt = random[:6]
+    return salt
 
 
 class Model(object):
@@ -198,7 +205,7 @@ class User(db.Model, Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String())
     password_hash = db.Column(db.String())
-    salt = db.Column(db.String())
+    salt = db.Column(db.String(), default=password_salt())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
     sex = db.Column(db.String())
     note = db.Column(db.String())
