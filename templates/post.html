@@ -7,7 +7,7 @@
 </head>
 <body>
     <p>{{ post.title }}</p>
-    <p>{{ post.body }}</p>
+    <p>{{ post.content }}</p>
     <p>{{ post.created_time }}</p>
     <p>{{ post.channel }}</p>
     {% for c in post.comment_list() %}

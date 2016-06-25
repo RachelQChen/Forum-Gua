@@ -130,7 +130,7 @@ class Post(db.Model, Model):
     channel_id = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
     title = db.Column(db.String())
-    body = db.Column(db.String())
+    content= db.Column(db.String())
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
@@ -138,7 +138,7 @@ class Post(db.Model, Model):
         super(Post, self).__init__()
         # init 里 get 和 验证
         self.title = form.get('title', '')
-        self.body = form.get('body', '')
+        self.content = form.get('content', '')
         self.channel_id = form.get('channel_id', '')
 
     def post_row(self):
