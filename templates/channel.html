@@ -86,27 +86,45 @@
         </div>
         <div class="templatemo-content-container">
             <div class="templatemo-flex-row flex-content-row">
-                    {#            {% for p in posts %}#}
-    {#                <tr>#}
-    {#                    <td>{{ p.link | safe }}</td>#}
-    {#                    <td>{{ p.time }}</td>#}
 
-    {#                </tr>#}
-    {#            {% endfor %}#}
-            {% for p in posts %}
-                <div class="templatemo-content-widget white-bg col-2">
-                    {% if is_admin or p.is_author(user) %}
-                        <a href="/post/delete/{{ p.id }}">删除 <i class="fa fa-times"></i></a>
-                    {% endif %}
+                {#            {% for p in posts %}#}
+                {#                <tr>#}
+                {#                    <td>{{ p.link | safe }}</td>#}
+                {#                    <td>{{ p.time }}</td>#}
 
-                    <div class="square"></div>
-                    <h2 class="templatemo-inline-block">{{ p.link | safe }}</h2>
-                    <p>{{ p.author_link }}发表于: {{ p.time }}</p>
-                    <hr>
-                    <p>{{ p.part_content }}</p>
-                </div>
-            {% endfor %}
+                {#                </tr>#}
+                {#            {% endfor %}#}
+                {% for p in posts %}
+                    <div class="templatemo-content-widget white-bg col-2">
+                        {% if is_admin or p.is_author(user) %}
+                            <a href="/post/delete/{{ p.id }}"><i class="fa fa-times"></i></a>
+                        {% endif %}
+
+                        <div class="square"></div>
+                        <h2 class="templatemo-inline-block">{{ p.link | safe }}</h2>
+                        <hr>
+                        <p>{{ p.author_link | safe }} 发表于: {{ p.time }}</p>
+                        <p>{{ p.part_content }}</p>
+                    </div>
+                {% endfor %}
             </div>
+{#            <div class="row form-group">#}
+                <div class="col-lg-12 form-group">
+                    <label for="inputFirstName"></label>
+                    <input type="text" class="form-control" id="inputFirstName" placeholder="标题" name="title" required>
+                    <textarea class="form-control" id="inputNote" rows="3" placeholder="写点啥" name="content" required></textarea>
+                    <input type="hidden" name="channel_id" value="{{ channel.id }}">
+                    <button id="id-button-write-post" class="templatemo-blue-button float-right">提 交</button>
+                </div>
+{#            </div>#}
+            {#        <form action="/post/add" method="POST" class="pure-form pure-form-aligned">#}
+            {#                <fieldset>#}
+            {#                    <textarea class="pure-input-1-2" placeholder="编辑标题" name="title" required></textarea>#}
+            {#                    <textarea class="text-link pure-input-1-2" placeholder="新帖子..." name="content" required></textarea>#}
+{#                                <input type="hidden" name="channel_id" value="{{ channel.id }}">#}
+            {#                    <button type="submit" class="button-submit pure-button pure-button-primary">提交</button>#}
+            {#                </fieldset>#}
+            {#             </form>#}
         </div>
     </div>
     {#<div class="pure-g">#}
@@ -123,13 +141,7 @@
     {#    </div>#}
     {##}
     {#    <div class="content pure-u-1 pure-u-md-3-4">#}
-    {#        <form action="/post/add" method="POST" class="pure-form pure-form-aligned">#}
-    {#            <fieldset>#}
-    {#                <textarea class="pure-input-1-2" placeholder="编辑标题" name="title" required></textarea>#}
-    {#                <textarea class="text-link pure-input-1-2" placeholder="新帖子..." name="content" required></textarea>#}
-    {#                <input type="hidden" name="channel_id" value="{{ channel.id }}">#}
-    {#                <button type="submit" class="button-submit pure-button pure-button-primary">提交</button>#}
-    {#            </fieldset>#}
+
     {#        </form>#}
     {#        <table class="pure-table">#}
     {#            <thead>#}

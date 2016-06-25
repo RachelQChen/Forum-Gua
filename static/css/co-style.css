@@ -35,6 +35,15 @@ nav li {
 	list-style: none;	
 	text-transform: uppercase;
 }
+
+.float-right {
+	float: right;
+}
+
+.float-left {
+	float: left;
+}
+
 .templatemo-inline-block {
 	display: inline-block;
 	vertical-align: middle;
