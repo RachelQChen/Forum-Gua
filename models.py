@@ -1,6 +1,8 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import sql
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
 
 import time
 import shutil
@@ -196,7 +198,7 @@ class User(db.Model, Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String())
-    password = db.Column(db.String())
+    password_hash = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
     sex = db.Column(db.String())
     note = db.Column(db.String())
@@ -207,13 +209,21 @@ class User(db.Model, Model):
     def __init__(self, form):
         super(User, self).__init__()
         self.username = form.get('username', '')
-        self.password = form.get('password', '')
         self.sex = form.get('sex', 'male')
         self.note = form.get('note', '')
+        psw = form.get('password', '')
+        self.password_hash = self.hash_password(psw)
+
+    def hash_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def update(self, form):
         self.username = form.get('username', self.username)
-        self.password = form.get('password', self.password)
+        psw = form.get('password', self.password)
+        self.password_hash = self.hash_password(psw)
         self.sex = form.get('sex', self.sex)
         self.note = form.get('note', self.note)
 
@@ -225,7 +235,7 @@ class User(db.Model, Model):
     def validate_login(self, user):
         if isinstance(user, User):
             username_equals = self.username == user.username
-            password_equals = self.password == user.password
+            password_equals = self.verify_password(user.password)
             return username_equals and password_equals
         else:
             return False
