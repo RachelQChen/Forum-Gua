@@ -6,6 +6,7 @@ from flask import request
 from flask import make_response
 from flask import send_from_directory
 from flask import abort
+from flask import flash
 
 
 import uuid
@@ -59,6 +60,7 @@ def admin_view():
     if is_administrator(user):
         return render_template('admin.html', roles=rs, channels=cs)
     else:
+        flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -128,6 +130,7 @@ def role_delete(role_id):
             r.delete()
         return redirect(url_for('admin_view'))
     else:
+        flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -174,6 +177,7 @@ def channel_delete(channel_id):
             c.delete()
         return redirect(url_for('channels'))
     else:
+        flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -217,6 +221,7 @@ def post_delete(post_id):
         p.delete()
         return redirect(url_for('channel_view', channel_id=cid))
     else:
+        flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -251,6 +256,7 @@ def comment_delete(comment_id):
         c.delete()
         return redirect(url_for('post_view', post_id=pid))
     else:
+        flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -258,16 +264,18 @@ def comment_delete(comment_id):
 def login():
     u = User(request.form)
     user = User.query.filter_by(username=u.username).first()
-    # log(user)
+    log('login-user: ', user)
     if u.validate_login(user):
-        # log('用户登录成功, user_id: ', user.id)
+        log('用户登录成功, user_id: ', user.id)
+        flash('您已成功登录!')
         r = make_response(redirect(url_for('user_view', user_id=user.id)))
         cookie_id = str(uuid.uuid4())
         cookie_dict[cookie_id] = user
         r.set_cookie('cookie_id', cookie_id)
         return r
     else:
-        # log('用户登录失败')
+        log('用户登录失败')
+        flash('登录失败,请检查您的用户名和密码.')
         return redirect(url_for('login_view'))
 
 
@@ -280,24 +288,26 @@ def login_view():
 def register():
     u = User(request.form)
     if u.validate_register():
-        # log('用户注册成功')
+        log('用户注册成功')
         u.save()
+        flash('恭喜,您已注册成功.')
         return redirect(url_for('login_view'))
     else:
-        # log('注册失败', request.form)
+        log('注册失败', request.form)
+        flash('抱歉, 注册失败, 请重试.')
         return redirect(url_for('login_view'))
 
 
 @app.route('/user/<user_id>')
 def user_view(user_id):
     u = User.query.filter_by(id=user_id).first()
-    # log ('user-view:', u)
+    log ('user-view:', u)
     show_update = False
     if is_current_user(u) or is_administrator(u):
         show_update = True
-    # log('show_update: ', show_update)
+    log('show_update: ', show_update)
     html = render_template('user.html', user=u, show_update=show_update)
-    # log('user.html: ', html)
+    log('user.html: ', html)
     return html
 
 
@@ -315,6 +325,7 @@ def user_delete(user_id):
         u.delete()
         return redirect(url_for('admin_users_view'))
     else:
+        flash('不好意思,你没有权限访问此页.')
         abort(401)
 
 
@@ -338,10 +349,10 @@ def user_update(user_id):
         abort(401)
 
 
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
+# @app.route('/uploads/<filename>')
+# def uploaded_file(filename):
+#     return send_from_directory(app.config['UPLOAD_FOLDER'],
+#                                filename)
 
 
 if __name__ == '__main__':
