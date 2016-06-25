@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <title>channel</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/co-style.css') }}" rel="stylesheet">
     <style>
         ul {
             list-style-type: none;
@@ -22,48 +25,108 @@
     </style>
 </head>
 <body>
-<div class="pure-g">
-    <div class="sidebar pure-u-1 pure-u-md-1-4">
-        <a href="/channel/list" class="primary-button pure-button">频道</a>
-        <div class="pure-menu pure-menu-open">
-            <ul>
-                {% for c in channels %}
-                    <li><a href="/channel/{{ c.id }}" class="pure-menu-heading">{{ c.name }}</a></li>
-                {% endfor %}
-            </ul>
+    <!-- Left column -->
+    <div class="templatemo-flex-row">
+      <div class="templatemo-sidebar">
+        <header class="templatemo-site-header">
+          <div class="square"></div>
+          <h1> Cocode</h1>
+        </header>
+        <div class="profile-photo-container">
+          <img src="{{ url_for('static', filename='images/profile-photo.jpg') }}" class="img-responsive">
+          <div class="profile-photo-overlay"></div>
         </div>
-    </div>
-
-    <div class="content pure-u-1 pure-u-md-3-4">
-        <form action="/post/add" method="POST" class="pure-form pure-form-aligned">
-            <fieldset>
-                <textarea class="pure-input-1-2" placeholder="编辑标题" name="title" required></textarea>
-                <textarea class="text-link pure-input-1-2" placeholder="新帖子..." name="content" required></textarea>
-                <input type="hidden" name="channel_id" value="{{ channel.id }}">
-                <button type="submit" class="button-submit pure-button pure-button-primary">提交</button>
-            </fieldset>
-        </form>
-        <table class="pure-table">
-            <thead>
-            <tr>
-                <th>帖子</th>
-                <th>创建时间</th>
-                <th>管理</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for p in posts %}
-                <tr>
-                    <td>{{ p.link | safe }}</td>
-                    <td>{{ p.time }}</td>
-                    {% if is_admin or p.is_author(user) %}
-                    <td><a href="/post/delete/{{ p.id }}">删除</a></td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+{#        <!-- Search box -->#}
+{#        <form class="templatemo-search-form" role="search">#}
+{#          <div class="input-group">#}
+{#              <button type="submit" class="fa fa-search"></button>#}
+{#              <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">#}
+{#          </div>#}
+{#        </form>#}
+        <br>
+        <div class="mobile-menu-icon">
+            <i class="fa fa-bars"></i>
+        </div>
+        <nav class="templatemo-left-nav">
+          <ul>
+            <li><a href="/channel/list" class="active"><i class="fa fa-home fa-fw"></i>频 道</a></li>
+              {% for c in channels %}
+                  <li>
+                      <a href="/channel/{{ c.id }}" class="pure-menu-heading">
+                          <i class="fa fa-map-marker fa-fw"></i>
+                          {{ c.name }}
+                      </a>
+                  </li>
+              {% endfor %}
+{#            <li><a href="data-visualization.html"><i class="fa fa-bar-chart fa-fw"></i></a></li>#}
+{#            <li><a href="data-visualization.html"><i class="fa fa-database fa-fw"></i>Data Visualization</a></li>#}
+{#            <li><a href="maps.html"><i class="fa fa-map-marker fa-fw"></i>Maps</a></li>#}
+{#            <li><a href="manage-users.html"><i class="fa fa-users fa-fw"></i>Manage Users</a></li>#}
+{#            <li><a href="preferences.html"><i class="fa fa-sliders fa-fw"></i>Preferences</a></li>#}
+{#            <li><a href="login.html"><i class="fa fa-eject fa-fw"></i>Sign Out</a></li>#}
+          </ul>
+        </nav>
+      </div>
+    <!-- Main content -->
+      <div class="templatemo-content col-1 light-gray-bg">
+        <div class="templatemo-top-nav-container">
+          <div class="row">
+            <nav class="templatemo-top-nav col-lg-12 col-md-12">
+              <ul class="text-uppercase">
+                {% if is_admin %}
+                    <li><a href="/admin" class="active">管理</a></li>
+                    <li><a href="">用户列表</a></li>
+                {% endif %}
+                <li><a href="/user/{{ user.id }}">{{ user.username }}</a></li>
+                <li><a href="/login">登录</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+{#<div class="pure-g">#}
+{##}
+{#    <div class="sidebar pure-u-1 pure-u-md-1-4">#}
+{#        <a href="/channel/list" class="primary-button pure-button">频道</a>#}
+{#        <div class="pure-menu pure-menu-open">#}
+{#            <ul>#}
+{#                {% for c in channels %}#}
+{#                    <li><a href="/channel/{{ c.id }}" class="pure-menu-heading">{{ c.name }}</a></li>#}
+{#                {% endfor %}#}
+{#            </ul>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#    <div class="content pure-u-1 pure-u-md-3-4">#}
+{#        <form action="/post/add" method="POST" class="pure-form pure-form-aligned">#}
+{#            <fieldset>#}
+{#                <textarea class="pure-input-1-2" placeholder="编辑标题" name="title" required></textarea>#}
+{#                <textarea class="text-link pure-input-1-2" placeholder="新帖子..." name="content" required></textarea>#}
+{#                <input type="hidden" name="channel_id" value="{{ channel.id }}">#}
+{#                <button type="submit" class="button-submit pure-button pure-button-primary">提交</button>#}
+{#            </fieldset>#}
+{#        </form>#}
+{#        <table class="pure-table">#}
+{#            <thead>#}
+{#            <tr>#}
+{#                <th>帖子</th>#}
+{#                <th>创建时间</th>#}
+{#                <th>管理</th>#}
+{#            </tr>#}
+{#            </thead>#}
+{#            <tbody>#}
+{#            {% for p in posts %}#}
+{#                <tr>#}
+{#                    <td>{{ p.link | safe }}</td>#}
+{#                    <td>{{ p.time }}</td>#}
+{#                    {% if is_admin or p.is_author(user) %}#}
+{#                    <td><a href="/post/delete/{{ p.id }}">删除</a></td>#}
+{#                    {% endif %}#}
+{#                </tr>#}
+{#            {% endfor %}#}
+{#            </tbody>#}
+{#        </table>#}
+{#    </div>#}
+{#</div>#}
 </body>
 </html>

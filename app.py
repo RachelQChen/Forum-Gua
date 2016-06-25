@@ -197,9 +197,10 @@ def channel_view(channel_id):
     if user is not None:
         role = user.role
         cs = role.channels.all()
+        is_admin = is_administrator(user)
         return render_template('channel.html',
-                               channels=cs, channel=c,
-                               posts=plist, user=user)
+                               channels=cs, channel=c, posts=plist,
+                               user=user, is_admin=is_admin)
     else:
         return redirect(url_for('login_view'))
 
