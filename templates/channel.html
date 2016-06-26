@@ -9,21 +9,41 @@
     <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/co-style.css') }}" rel="stylesheet">
-    <style>
-        ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
+    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+{#    <script src="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>#}
+    <script type="text/javascript">
+        var addPost = function () {
+            $('#id-button-write-post').on('click', function () {
+                console.log('点击增加文章');
+                var title = $('#id-text-post-title').val();
+                console.log('新文章题目: ', title);
+                var content = $('#id-text-post-content').val();
+                console.log('新文章内容: ', content);
+                var channel_id = $('#id-post-channel').val();
+                console.log('文章的频道: ', channel_id);
+                var data = {
+                    title: title,
+                    content: content,
+                    channel_id: channel_id,
+                };
+                postData = JSON.stringify(data);
+                console.log('postData: ', postData);
+                $.ajax({
+                    url: '/role/add',
+                    type: 'POST',
+                    data: postData,
+                    contentType: 'application/json',
+                    success: function (d) {
+                        r = JSON.parse(d);
+                        console.log('add role返回数据: ', r);
 
-        .button-submit {
-            margin-top: 10px;
-            min-width: 50%;
-            max-width: 500px;
-            height: 30px;
-        }
+                    }
+                });
+            });
+        };
 
-    </style>
+    </script>
+
 </head>
 <body>
 <!-- Left column -->
@@ -110,10 +130,10 @@
             </div>
 {#            <div class="row form-group">#}
                 <div class="col-lg-12 form-group">
-                    <label for="inputFirstName"></label>
-                    <input type="text" class="form-control" id="inputFirstName" placeholder="标题" name="title" required>
-                    <textarea class="form-control" id="inputNote" rows="3" placeholder="写点啥" name="content" required></textarea>
-                    <input type="hidden" name="channel_id" value="{{ channel.id }}">
+                    <label for="id-text-post-title"></label>
+                    <input type="text" class="form-control" id="id-text-post-title" placeholder="标题" name="title" required>
+                    <textarea class="form-control" id="id-text-post-content" rows="3" placeholder="写点啥" name="content" required></textarea>
+                    <input type="hidden" id="id-post-channel" name="channel_id" value="{{ channel.id }}">
                     <button id="id-button-write-post" class="templatemo-blue-button float-right">提 交</button>
                 </div>
 {#            </div>#}
