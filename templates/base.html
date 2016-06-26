@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    {% block title %}{% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
+    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/co-style.css') }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/bootstrap-filestyle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/templatemo-script.js') }}"></script>
+    {% block script %}{% endblock %}
+    {% endblock %}
+</head>
+
+<body>
+<!-- Left column -->
+{% block body %}
+<div class="templatemo-flex-row">
+    <div class="templatemo-sidebar">
+        <header class="templatemo-site-header">
+            <div class="square"></div>
+            <h1> Cocode</h1>
+        </header>
+        <div class="profile-photo-container">
+            <img src="{{ url_for('static', filename='images/profile-photo.jpg') }}" class="img-responsive">
+            <div class="profile-photo-overlay"></div>
+        </div>
+        <br>
+        <div class="mobile-menu-icon">
+            <i class="fa fa-bars"></i>
+        </div>
+        <nav class="templatemo-left-nav">
+            <ul>
+                <li><a href="/channel/list" class="active"><i class="fa fa-home fa-fw"></i>频 道</a></li>
+                {% for c in channels %}
+                    <li>
+                        <a href="/channel/{{ c.id }}">
+                            <i class="fa fa-map-marker fa-fw"></i>
+                            {{ c.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+                <li><a href="#"><i class="fa fa-eject fa-fw"></i>登 出</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Main content -->
+    {% block header %}
+    <div class="templatemo-content col-1 light-gray-bg">
+        <div class="templatemo-top-nav-container">
+            <div class="row">
+                <nav class="templatemo-top-nav col-lg-12 col-md-12">
+                    <ul class="text-uppercase">
+                        {% if is_admin %}
+                            <li><a href="/admin" class="active">管理</a></li>
+                            <li><a href="">用户列表</a></li>
+                        {% endif %}
+                        {% if current_user is not none %}
+                            <li><a href="/user/{{ current_user.id }}">{{ current_user.username }}</a></li>
+                        {% endif %}
+                        <li><a href="/login">登 录</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% block main_body %}{% endblock %}
+    </div>
+    {% endblock %}
+</div>
+{% endblock %}
+</body>
+</html>

@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User</title>
-</head>
+{% extends "base.html" %}
+{% block title %}{{ user.username }}{% endblock %}
+{#{% block head %}#}
+{#    {{ super() }}#}
+{#{% endblock %}#}
+
 <body>
+{% block body %}
+    {{ super() }}
+{% endblock %}
+
+{% block header %}
+    {{ super() }}
+{% endblock %}
+
+{% block main_body %}
     <p>{{ user.username }}</p>
     <p>{{ user.id }}</p>
     <p>{{ user.role_id }}</p>
@@ -17,5 +26,5 @@
     <p>
         <a href="/channel/list" class="primary-button pure-button">频道</a>
     </p>
+{% endblock %}
 </body>
-</html>

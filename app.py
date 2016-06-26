@@ -217,11 +217,17 @@ def post_add():
     if user is None:
         return redirect(url_for('login_view'))
     else:
-        p = Post(request.form)
+        p = Post(request.json)
         p.user = user
         p.save()
         cid = p.channel_id
+        # responseData = {
+        #     'channel_name': c.name,
+        #     'channel_id': c.id,
+        # }
+        # return json.dumps(responseData, indent=2)
         return redirect(url_for('channel_view', channel_id=cid))
+
 
 
 @app.route('/post/delete/<post_id>')
@@ -373,7 +379,21 @@ def user_update(user_id):
 # @app.route('/uploads/<filename>')
 # def uploaded_file(filename):
 #     return send_from_directory(app.config['UPLOAD_FOLDER'],
-#                                filename)
+#
+#                             filename)
+@app.context_processor
+def args_for_base():
+    """Add args to base.html"""
+    channels = Channel.query.all()
+    user = current_user()
+    is_admin = is_administrator(user)
+    args = {
+        'channels': channels,
+        'current_user': user,
+        'is_admin': is_admin,
+    }
+    return dict(**args)
+
 
 
 if __name__ == '__main__':
