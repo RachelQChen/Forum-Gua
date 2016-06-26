@@ -154,6 +154,8 @@ class Post(db.Model, Model):
             'part_content': part_content,
             'author_link': author_link,
             'is_author': self.is_author(),
+            'content': self.content,
+            'comment_list': self.comment_list(),
         }
         return pr
 

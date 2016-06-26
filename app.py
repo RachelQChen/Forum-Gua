@@ -250,9 +250,10 @@ def post_delete(post_id):
 @app.route('/post/<post_id>')
 def post_view(post_id):
     p = Post.query.filter_by(id=post_id).first()
-    u = current_user()
-    is_admin = is_administrator(u)
-    return render_template('post.html', post=p, user=u, is_admin=is_admin)
+    post = p.post_row()
+    # u = current_user()
+    # is_admin = is_administrator(u)
+    return render_template('post.html', post=post)
 
 
 @app.route('/comment/add', methods=['POST'])
