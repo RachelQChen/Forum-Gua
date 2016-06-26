@@ -115,11 +115,11 @@ class Channel(db.Model, Model):
             if checked_status:
                 if r not in c.roles:
                     c.roles.append(r)
-                    print('增加', c, r)
+                    print('增加role in channel:', c, r)
             else:
                 if r in c.roles:
                     c.roles.remove(r)
-                    print('删除', c, r)
+                    print('删除该channel里的role:', c, r)
         db.session.commit()
 
 

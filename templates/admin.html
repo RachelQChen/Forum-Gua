@@ -5,7 +5,8 @@
     <title>Title</title>
     <link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+{#    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>#}
     <script src="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         var addRole = function () {
@@ -27,6 +28,7 @@
                         success: function (d) {
                             r = JSON.parse(d);
                             console.log('add role返回数据: ', r);
+
                         }
                     });
                 })
@@ -117,26 +119,22 @@
             var cookieList = document.cookie.split(';');
             console.log('cookie: ', cookieList);
             $.each(cookieList, function (i, e) {
-                var start = e.substr(1, 13);
-                console.log('start:', start);
-                console.log('type of start: ', typeof (start));
-                console.log('start == "response_data"? ', start == "response_data");
-                if (start == "response_data") {
-                    var responseData = e.split('=')[1];
-                    console.log('response data', responseData);
-                    var respData = responseData.replace(/\\054/g, ',');
-                    console.log('respData: ', respData);
-                    var arr = eval('(' + respData + ')');
-                    console.log('respArr: ', arr);
-                    var jsonData = JSON.parse(arr);
-                    console.log('jsonData:', jsonData);
-                    $.each(jsonData, function(i, e) {
+                var data = e;
+                var cidRidList = 'cid_rid_list';
+                console.log('包含cid rid list:', data.indexOf(cidRidList)!=-1);
+                if (data.indexOf(cidRidList) != -1) {
+                    var idStr = data.split('=')[1];
+                    var idStrDecode = idStr.replace(/\\054/g, ',');
+                    var idArray = eval('(' + idStrDecode + ')');
+                    console.log('id array: ', idArray);
+                    var idArrayJson = JSON.parse(idArray);
+                    $.each(idArrayJson, function(i, e) {
                         var cidRid = e['cid-rid'];
                         console.log('cidRid: ', cidRid);
-                        $(cidRid).prop('checked', true)
+                        $(cidRid).prop('checked', true);
                     });
                 } else {
-                    console.log('other cookie startswith: ', start)
+                    console.log('other cookie: ', e)
                 }
             });
         };
@@ -161,12 +159,12 @@
     {#    </div>#}
     {#    {% endfor %}#}
     <fieldset>
-        <textarea id="id-text-role-name" name="name" class="form-control" placeholder="增加角色"></textarea>
+        <textarea id="id-text-role-name" name="name" class="form-control" placeholder="增加角色" required></textarea>
         <button id="id-button-create-role" class="pure-button pure-button-primary" type="submit">增加</button>
     </fieldset>
     <br>
     <fieldset>
-        <textarea id="id-text-channel-name" name="name" class="form-control" placeholder="创建频道"></textarea>
+        <textarea id="id-text-channel-name" name="name" class="form-control" placeholder="创建频道" required></textarea>
         <button id="id-button-create-channel" class="pure-button pure-button-primary">创建</button>
     </fieldset>
     <br>

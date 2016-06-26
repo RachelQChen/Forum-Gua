@@ -47,6 +47,23 @@ def is_administrator(user):
         return user.role_id == 1
 
 
+def cid_rid_for_cookie():
+    cid_rid_list = []
+    channels = Channel.query.all()
+    for c in channels:
+        roles = c.roles
+        for r in roles:
+            cid_rid = '#id-{}-{}'.format(c.id, r.id)
+            data = {
+                'cid-rid': cid_rid,
+            }
+            cid_rid_list.append(data)
+    cookie_dict['cid_rid_list'] = cid_rid_list
+    log('含有cid-rid的cookie_dict: ', cookie_dict)
+    return cid_rid_list
+
+
+
 @app.route('/')
 def index():
     return redirect(url_for('channels'))
@@ -58,13 +75,13 @@ def admin_view():
     cs = Channel.query.all()
     user = current_user()
     if is_administrator(user):
-        data = cookie_dict.get('response_data', '')
-        log('cookie存的data: ', data)
+        data = cid_rid_for_cookie()
+        log('cid_rid_list: ', data)
         json_data = json.dumps(data)
         log('json_data: ', json_data)
         r = make_response(render_template('admin.html', roles=rs, channels=cs))
         log('响应r: ', r)
-        r.set_cookie('response_data', json_data)
+        r.set_cookie('cid_rid_list', json_data)
         return r
     else:
         # flash('不好意思,你没有权限访问此页.')
@@ -79,18 +96,7 @@ def admin():
     if is_admin:
         option_json = request.json
         Channel.update_roles(option_json)
-        response_data = []
-        channels = Channel.query.all()
-        for c in channels:
-            roles = c.roles.all()
-            for r in roles:
-                cid_rid = '#id-{}-{}'.format(c.id, r.id)
-                data = {
-                    'cid-rid': cid_rid,
-                }
-                response_data.append(data)
-        cookie_dict['response_data'] = response_data
-        log('存了resp-data后的cookie_dict: ', cookie_dict)
+        response_data = cid_rid_for_cookie()
         return json.dumps(response_data, indent=2)
     else:
         abort(401)
