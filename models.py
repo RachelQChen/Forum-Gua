@@ -89,6 +89,7 @@ class Channel(db.Model, Model):
     def channel_row(self):
         cr = {
             'id': self.id,
+            'name': self.name,
             'link': '<a href="/channel/{}">{}</a>'.format(self.id, self.name),
             'time': self.created_time,
         }

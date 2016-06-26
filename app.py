@@ -149,16 +149,17 @@ def role_delete(role_id):
 
 
 @app.route('/channel/list')
-def channels():
+def channels_roles():
     user = current_user()
     if user is not None:
-        role = user.role
-        channels = role.channels.all()
-        c_rows = []
-        for c in channels:
-            cr = c.channel_row()
-            c_rows.append(cr)
-        return render_template('channels.html', channels=c_rows)
+        roles = Role.query.all()
+        # role = user.role
+        # channels = role.channels
+        # c_rows = []
+        # for c in channels:
+        #     cr = c.channel_row()
+        #     c_rows.append(cr)
+        return render_template('channels.html', roles=roles)
     else:
         return redirect(url_for('login_view'))
 
@@ -397,11 +398,17 @@ def user_update(user_id):
 @app.context_processor
 def args_for_base():
     """Add args to base.html"""
-    channels = Channel.query.all()
     user = current_user()
     is_admin = is_administrator(user)
+    c_rows = []
+    if user is not None:
+        role = user.role
+        channels = role.channels
+        for c in channels:
+            cr = c.channel_row()
+            c_rows.append(cr)
     args = {
-        'channels': channels,
+        'channels': c_rows,
         'current_user': user,
         'is_admin': is_admin,
     }

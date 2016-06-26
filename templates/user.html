@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% block title %}{{ user.username }}{% endblock %}
 
-<body>
+
 {% block body %}
     {{ super() }}
 {% endblock %}
 
-{% block header %}
+{% block main_content_header %}
     {{ super() }}
 {% endblock %}
 
-{% block main_body %}
+{% block main_content_body %}
     <div class="templatemo-flex-row flex-content-row">
-            <div class="templatemo-content-widget white-bg col-2">
+        <div class="templatemo-content-widget white-bg col-2">
               <i class="fa fa-times"></i>
               <div class="media margin-bottom-30">
                 <div class="media-left padding-right-25">
@@ -22,7 +22,7 @@
                 </div>
                 <div class="media-body">
                   <h2 class="media-heading text-uppercase blue-text">{{ user.username }}</h2>
-                  <p>{{ user.note }}</p>
+                  <p>{{ user.sex }}  |  {{ user.note }}</p>
                 </div>
               </div>
               <div class="table-responsive">
@@ -60,4 +60,4 @@
             </div>
     </div>
 {% endblock %}
-</body>
+

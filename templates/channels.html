@@ -1,55 +1,137 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Channels</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
-    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript">
-        var stripedTable = function() {
-            $('tbody tr:odd').addClass("pure-table-odd");
-        };
+{% extends "base.html" %}
 
-        var __main = function() {
-            stripedTable();
-        };
 
-        $(document).ready(function() {
-            __main();
-        });
-    </script>
+{% block title %}频道{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
 
-    <style type="text/css">
-        .channels-align {
-            margin: 0 auto;
-        }
-    </style>
+{% block body %}
+    {{ super() }}
+{% endblock %}
 
-</head>
-<body>
-    <a href="/login" class="primary-button pure-button">登录</a>
-    <table class="pure-table channels-align">
-        <thead>
-            <tr>
-                <th>频道</th>
-                <th>创建时间</th>
-                {% if is_admin %}
-                <th>管理</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {%  for c in channels %}
+{% block main_content %}
+    {{ super() }}
+{% endblock %}
+
+{% block main_content_header %}
+    {{ super() }}
+{% endblock %}
+
+{% block main_content_body %}
+    <hr>
+    <div class="templatemo-content-widget no-padding">
+        <div class="panel panel-default table-responsive">
+            <table class="table table-striped table-bordered templatemo-user-table">
+                <thead>
                 <tr>
-                    <td>{{ c.link | safe }}</td>
-                    <td>{{ c.time }}</td>
+                    <td><a href="" class="white-text templatemo-sort-by">ID <span class="caret"></span></a></td>
+                    <td><a href="" class="white-text templatemo-sort-by">频 道 <span class="caret"></span></a></td>
+                    <td><a href="" class="white-text templatemo-sort-by">创建时间 <span class="caret"></span></a></td>
                     {% if is_admin %}
-                        <td><a href="/channel/delete/{{ c.id }}">删除频道</a></td>
+                    <td>编辑</td>
+                    <td>删除</td>
                     {% endif %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+                </thead>
+                <tbody>
+                {% for c in channels %}
+                    <tr>
+                        <td>{{ c.id }}</td>
+                        <td>{{ c.link | safe }}</td>
+                        <td>{{ c.time }}</td>
+                        {% if is_admin %}
+                        <td><a href="" class="templatemo-edit-btn">编辑</a></td>
+                            <td><a href="/channel/delete/{{ c.id }}" class="templatemo-link">删除</a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr>
+    {% if is_admin %}
+    <div class="templatemo-content-widget no-padding">
+        <div class="panel panel-default table-responsive">
+            <table class="table table-striped table-bordered templatemo-user-table">
+                <thead>
+                <tr>
+                    <td><a href="" class="white-text templatemo-sort-by">ID <span class="caret"></span></a></td>
+                    <td><a href="" class="white-text templatemo-sort-by">角 色 <span class="caret"></span></a></td>
+                    <td>编辑</td>
+                    <td>删除</td>
+                </tr>
+                </thead>
+                <tbody>
+                {% for r in roles %}
+                    <tr>
+                        <td>{{ r.id }}</td>
+                        <td>{{ r.name }}</td>
+                        <td><a href="" class="templatemo-edit-btn">编辑</a></td>
+                        <td><a href="/role/delete/{{ r.id }}" class="templatemo-link">删除</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    <hr>
+{% endblock %}
+
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>Channels</title>#}
+{#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">#}
+{#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">#}
+{#    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>#}
+{#    <script type="text/javascript">#}
+{#        var stripedTable = function() {#}
+{#            $('tbody tr:odd').addClass("pure-table-odd");#}
+{#        };#}
+{##}
+{#        var __main = function() {#}
+{#            stripedTable();#}
+{#        };#}
+{##}
+{#        $(document).ready(function() {#}
+{#            __main();#}
+{#        });#}
+{#    </script>#}
+{##}
+{#    <style type="text/css">#}
+{#        .channels-align {#}
+{#            margin: 0 auto;#}
+{#        }#}
+{#    </style>#}
+{##}
+{#</head>#}
+{#<body>#}
+{#    <a href="/login" class="primary-button pure-button">登录</a>#}
+{#    <table class="pure-table channels-align">#}
+{#        <thead>#}
+{#            <tr>#}
+{#                <th>频道</th>#}
+{#                <th>创建时间</th>#}
+{#                {% if is_admin %}#}
+{#                <th>管理</th>#}
+{#                {% endif %}#}
+{#            </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#            {%  for c in channels %}#}
+{#                <tr>#}
+{#                    <td>{{ c.link | safe }}</td>#}
+{#                    <td>{{ c.time }}</td>#}
+{#                    {% if is_admin %}#}
+{#                        <td><a href="/channel/delete/{{ c.id }}">删除频道</a></td>#}
+{#                    {% endif %}#}
+{#                </tr>#}
+{#            {% endfor %}#}
+{#        </tbody>#}
+{#    </table>#}
+{#</body>#}
+{#</html>#}

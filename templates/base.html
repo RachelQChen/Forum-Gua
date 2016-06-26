@@ -3,7 +3,7 @@
 <head>
     {% block head %}
     <meta charset="UTF-8">
-    {% block title %}{% endblock %}
+    <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
@@ -50,12 +50,14 @@
         </nav>
     </div>
     <!-- Main content -->
-    {% block header %}
+    {% block main_content %}
+    {% block main_content_header %}
     <div class="templatemo-content col-1 light-gray-bg">
         <div class="templatemo-top-nav-container">
             <div class="row">
                 <nav class="templatemo-top-nav col-lg-12 col-md-12">
                     <ul class="text-uppercase">
+                        {% block main_content_header_titles %}
                         {% if is_admin %}
                             <li><a href="/admin" class="active">管理</a></li>
                             <li><a href="">用户列表</a></li>
@@ -64,11 +66,13 @@
                             <li><a href="/user/{{ current_user.id }}">{{ current_user.username }}</a></li>
                         {% endif %}
                         <li><a href="/login">登 录</a></li>
+                        {% endblock %}
                     </ul>
                 </nav>
             </div>
         </div>
-        {% block main_body %}{% endblock %}
+        {% endblock %}
+        {% block main_content_body %}{% endblock %}
     </div>
     {% endblock %}
 </div>
