@@ -329,13 +329,26 @@ def register():
 def user_view(user_id):
     u = User.query.filter_by(id=user_id).first()
     log ('user-view:', u)
-    show_update = False
+    can_edit = False
     if is_current_user(u) or is_administrator(u):
-        show_update = True
-    log('show_update: ', show_update)
-    html = render_template('user.html', user=u, show_update=show_update)
+        can_edit = True
+    log('can_edit: ', can_edit)
+    html = render_template('user.html', user=u, can_edit=can_edit)
     log('user.html: ', html)
     return html
+
+@app.route('/user/<user_id>/post/list')
+def user_posts(user_id):
+    u = User.query.filter_by(id=user_id).first()
+    posts = u.posts
+    return render_template('posts.html', posts=posts)
+
+
+@app.route('/user/<user_id>/comment/list')
+def user_comments(user_id):
+    u = User.query.filter_by(id=user_id).first()
+    comments = u.comments
+    return render_template('comments.html', comments=comments)
 
 
 @app.route('/admin/users')

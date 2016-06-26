@@ -234,10 +234,15 @@ class User(db.Model, Model):
         hash2 = hashlib.md5((hash1 + self.salt).encode('ascii')).hexdigest()
         self.password_hash = hash2
 
-    # def verify_password(self, user_password_hash):
-    #     user_psw_hash1 = hashlib.md5(user_password.encode('ascii')).hexdigest()
-    #     user_psw_hash2 = hashlib.md5((user_psw_hash1 + self.salt).encode('ascii')).hexdigest()
-    #     return self.password_hash == user_psw_hash2
+    @property
+    def posts_link(self):
+        posts_link = u'<a href="/user/{}/post/list">文章</a>'.format(self.id)
+        return posts_link
+
+    @property
+    def comments_link(self):
+        comments_link = u'<a href="/user/{}/comment/list">评论</a>'.format(self.id)
+        return comments_link
 
     def update(self, form):
         self.username = form.get('username', self.username)
