@@ -1,21 +1,17 @@
 {% extends "base.html" %}
-{% block title %}{{ post.name }}{% endblock %}
+
+
+{% block title %}
+    {{ post.name }}
+{% endblock %}
 
 {% block style %}
     <style type="text/css">
         .co-delete {
             position: inherit;
-            margin-left: 15px;
+            float: right;
         }
     </style>
-{% endblock %}
-
-{% block body %}
-    {{ super() }}
-{% endblock %}
-
-{% block main_content_header %}
-    {{ super() }}
 {% endblock %}
 
 {% block main_content_body %}

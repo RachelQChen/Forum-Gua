@@ -247,6 +247,12 @@ class User(db.Model, Model):
         comments_link = u'<a href="/user/{}/comment/list">评论</a>'.format(self.id)
         return comments_link
 
+    def is_male(self):
+        return  self.sex == 'male'
+
+    def is_female(self):
+        return self.sex == 'female'
+
     def update(self, form):
         self.username = form.get('username', self.username)
         psw = form.get('password', self.password)

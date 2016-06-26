@@ -1,28 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>User-Update</title>
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-</head>
-<body>
-    <h1>编辑</h1>
-    <form class="pure-form" action="/admin/users/update/{{ user.id }}" method="POST">
-        <fieldset class="pure-group">
-            <input name="username" class="pure-input-1-2" placeholder="用户名"/>{{ user.user_name }}
-            <input name="password" type="password" class="pure-input-1-2" placeholder="输入新密码"/>
-            <input name="note" class="pure-input-1-2" placeholder="编辑个性签名:{{ user.note }}"/>
-        </fieldset>
-        <div>
-            <label class="checkbox-inline" for="male">
-                <input type="radio" name="sex" id="male" value="male" checked> 男
-            </label>
-            <label class="checkbox-inline" for="female" style="margin-top: 8px;">
-                <input type="radio" name="sex" id="female" value="female"> 女
-            </label>
+{% extends "base.html" %}
+
+
+{% block title %}
+    编辑 {{ user.name }}
+{% endblock %}
+
+{% block main_content_body %}
+    <div class="panel panel-default margin-10">
+        <div class="panel-heading"><h2 class="text-uppercase">编辑个人信息</h2></div>
+        <div class="panel-body">
+            <form action="/admin/users/update/{{ user.id }}" method="post" class="templatemo-login-form">
+                <div class="form-group">
+                    <label for="inputEmail">修改用户名</label>
+                    <input name="username" class="form-control" id="inputEmail" placeholder="{{ user.username }}">
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail">修改密码</label>
+                    <input type="password" class="form-control" placeholder="新密码" name="password">
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail">编辑自我介绍</label>
+                    <input name="note" class="form-control" placeholder="{{ user.note }}">
+                </div>
+                <div class="col-lg-12">
+                    <div class="margin-right-15 templatemo-inline-block">
+                        <input type="radio" name="sex" id="male" value="male" checked="{{ user.is_male() }}">
+                        <label for="male" class="font-weight-400"><span></span>男</label>
+                    </div>
+                    <div class="margin-right-15 templatemo-inline-block">
+                        <input type="radio" name="sex" id="female" value="female" checked="{{ user.is_female() }}">
+                        <label for="female" class="font-weight-400"><span></span>女</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="templatemo-blue-button">Submit</button>
+                </div>
+            </form>
         </div>
-        <br>
-        <button class="pure-button pure-button-primary pure-input-1-2" type="submit">提交修改</button>
-    </form>
-</body>
-</html>
+    </div>
+{% endblock %}
+
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <title>User-Update</title>#}
+{#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">#}
+{#</head>#}
+{#<body>#}
+{#    <h1>编辑</h1>#}
+{#    <form class="pure-form" action="/admin/users/update/{{ user.id }}" method="POST">#}
+{#        <fieldset class="pure-group">#}
+{#            <input name="username" class="pure-input-1-2" placeholder="用户名"/>{{ user.user_name }}#}
+{#            <input name="password" type="password" class="pure-input-1-2" placeholder="输入新密码"/>#}
+{#            <input name="note" class="pure-input-1-2" placeholder="编辑个性签名:{{ user.note }}"/>#}
+{#        </fieldset>#}
+{#        <div>#}
+{#            <label class="checkbox-inline" for="male">#}
+{#                <input type="radio" name="sex" id="male" value="male" checked> 男#}
+{#            </label>#}
+{#            <label class="checkbox-inline" for="female" style="margin-top: 8px;">#}
+{#                <input type="radio" name="sex" id="female" value="female"> 女#}
+{#            </label>#}
+{#        </div>#}
+{#        <br>#}
+{#        <button class="pure-button pure-button-primary pure-input-1-2" type="submit">提交修改</button>#}
+{#    </form>#}
+{#</body>#}
+{#</html>#}

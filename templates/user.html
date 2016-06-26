@@ -1,14 +1,10 @@
 {% extends "base.html" %}
-{% block title %}{{ user.username }}{% endblock %}
 
 
-{% block body %}
-    {{ super() }}
+{% block title %}
+    {{ user.username }}
 {% endblock %}
 
-{% block main_content_header %}
-    {{ super() }}
-{% endblock %}
 
 {% block main_content_body %}
     <div class="templatemo-flex-row flex-content-row">
