@@ -8,7 +8,6 @@ from flask import abort
 from flask import flash
 from flask import session
 
-
 import uuid
 from flask import json
 
@@ -22,22 +21,25 @@ from rlog import log
 
 app = Flask(__name__)
 
-
 app.secret_key = 'asdjf1923'
 cookie_dict = {}
 
 
 def current_user():
-    cid = request.cookies.get('cookie_id')
-    user = cookie_dict.get(cid, None)
-    return user
+    uid = session.get('user_id')
+    if uid is not None:
+        user = User.query.filter_by(id=uid).first()
+        return user
+    else:
+        return None
 
 
 def is_current_user(user):
     if user is None:
         return False
     else:
-        return user is current_user()
+        uid = session.get('user_id')
+        return user.id == uid
 
 
 def is_administrator(user):
@@ -47,6 +49,8 @@ def is_administrator(user):
         return user.role_id == 1
 
 
+# cookied 实时存入对应权限的channel id, role id, 发送给前端解析.
+# #保证刷新,注销之后,页面保持勾选状态.
 def cid_rid_for_cookie():
     cid_rid_list = []
     channels = Channel.query.all()
@@ -61,7 +65,6 @@ def cid_rid_for_cookie():
     cookie_dict['cid_rid_list'] = cid_rid_list
     log('含有cid-rid的cookie_dict: ', cookie_dict)
     return cid_rid_list
-
 
 
 @app.route('/')
@@ -147,6 +150,7 @@ def role_delete(role_id):
         # flash('不好意思,你没有权限访问此页.')
         abort(401)
 
+
 @app.route('/role/update/<role_id>', methods=['POST'])
 def role_update(role_id):
     r = Role.query.filter_by(id=role_id).first()
@@ -213,12 +217,10 @@ def channel_view(channel_id):
     plist = c.post_list()
     user = current_user()
     if user is not None:
-        role = user.role
-        cs = role.channels.all()
-        is_admin = is_administrator(user)
-        return render_template('channel.html',
-                               channels=cs, channel=c, posts=plist,
-                               user=user, is_admin=is_admin)
+        # role = user.role
+        # cs = role.channels.all()
+        # is_admin = is_administrator(user)
+        return render_template('channel.html', channel=c, posts=plist)
     else:
         return redirect(url_for('login_view'))
 
@@ -235,7 +237,6 @@ def channel_update(channel_id):
         abort(401)
 
 
-
 @app.route('/post/add', methods=['POST'])
 def post_add():
     user = current_user()
@@ -250,7 +251,7 @@ def post_add():
         log('post add, dict: ', post)
         response_data = {
             'id': post.get('id', ''),
-            'link': post.get('link' ,''),
+            'link': post.get('link', ''),
             'time': post.get('time', ''),
             'part_content': post.get('part_content', ''),
             'author_link': post.get('author_link', ''),
@@ -266,7 +267,6 @@ def post_add():
         # }
         # return json.dumps(responseData, indent=2)
         # return redirect(url_for('channel_view', channel_id=cid))
-
 
 
 @app.route('/post/delete/<post_id>')
@@ -331,16 +331,31 @@ def login():
         u.hash_password(request.form)
         if u.validate_login(user):
             log('用户登录成功, user_id: ', user.id)
+            session['user_id'] = user.id
             # flash('您已成功登录!')
-            r = make_response(redirect(url_for('user_view', user_id=user.id)))
-            cookie_id = str(uuid.uuid4())
-            cookie_dict[cookie_id] = user
-            r.set_cookie('cookie_id', cookie_id)
-            return r
+            # r = make_response()
+            # cookie_id = str(uuid.uuid4())
+            # cookie_dict[cookie_id] = user
+            # r.set_cookie('cookie_id', cookie_id)
+            return redirect(url_for('user_view', user_id=user.id))
     else:
         log('用户登录失败')
         flash('登录失败,请检查您的用户名和密码.')
         return redirect(url_for('login_view'))
+
+
+@app.route('/signout/<user_id>')
+def signout(user_id):
+    uid = session.get('user_id')
+    log('session user id:', uid)
+    log('current user id:', user_id)
+    log('sid==cid? ', str(uid)==user_id)
+    if user_id == str(uid):
+        session['user_id'] = None
+        log('signed out?', session.get('user_id') is None)
+        return redirect(url_for('login_view'))
+    else:
+        abort(401)
 
 
 @app.route('/login')
@@ -368,7 +383,7 @@ def register():
 @app.route('/user/<user_id>')
 def user_view(user_id):
     u = User.query.filter_by(id=user_id).first()
-    log ('user-view:', u)
+    log('user-view:', u)
     user = current_user()
     can_edit = False
     if is_current_user(u) or is_administrator(user):
@@ -423,7 +438,7 @@ def user_delete(user_id):
 def user_update_view(user_id):
     u = User.query.filter_by(id=user_id).first()
     user = current_user()
-    can_edit = u==user or is_administrator(user)
+    can_edit = u == user or is_administrator(user)
     return render_template('user_update.html', user=u, can_edit=can_edit)
 
 
@@ -464,7 +479,6 @@ def args_for_base():
         'is_admin': is_admin,
     }
     return dict(**args)
-
 
 
 if __name__ == '__main__':

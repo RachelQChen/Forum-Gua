@@ -73,7 +73,7 @@
             <div class="templatemo-flex-row flex-content-row co-posts">
                 {% for p in posts %}
                     <div class="templatemo-content-widget white-bg col-2">
-                        {% if is_admin or p.is_author(user) %}
+                        {% if is_admin or p.is_author(current_user) %}
                             <a href="/post/delete/{{ p.id }}"><i class="fa fa-times"></i></a>
                         {% endif %}
 
