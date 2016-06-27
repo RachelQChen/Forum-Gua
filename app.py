@@ -349,7 +349,7 @@ def user_posts(user_id):
 @app.route('/user/<user_id>/comment/list')
 def user_comments(user_id):
     u = User.query.filter_by(id=user_id).first()
-    comments = u.comments
+    comments = u.comment_list()
     return render_template('comments.html', comments=comments)
 
 

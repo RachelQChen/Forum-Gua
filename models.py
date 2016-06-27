@@ -190,12 +190,16 @@ class Comment(db.Model, Model):
 
     def comment_row(self):
         u = User.query.filter_by(id=self.user_id).first()
+        p = Post.query.filter_by(id=self.post_id).first()
         user_link = u'<a href="/user/{}">{}</a>'.format(u.id, u.username)
+        post_link = u'<a href="/post/{}">{}</a>'.format(p.id, p.title[:5])
         c = {
             'id': self.id,
             'user_link': user_link,
+            'post_link': post_link,
             'content': self.content,
             'is_author': self.is_author(),
+            'time': self.created_time,
         }
         return c
 
@@ -266,6 +270,13 @@ class User(db.Model, Model):
         for p in posts:
             plist.append(p.post_row())
         return plist
+
+    def comment_list(self):
+        comments = self.comments
+        clist = []
+        for c in comments:
+            clist.append(c.comment_row())
+        return clist
 
     def validate_username(self):
         if User.query.filter_by(username=self.username).first() is None:
