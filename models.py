@@ -57,6 +57,9 @@ class Role(db.Model, Model):
         # init 里 get 和 验证
         self.name = form.get('name', '')
 
+    def update(self, form):
+        self.name = form.get('name', self.name)
+
     # def add_channel(self, form):
     #     channels_id = form.getlist(self.name)
     #     print('在加channels id: ', channels_id)
@@ -85,6 +88,9 @@ class Channel(db.Model, Model):
         super(Channel, self).__init__()
         # init 里 get 和 验证
         self.name = form.get('name', '')
+
+    def update(self, form):
+        self.name = form.get('name', self.name)
 
     def channel_row(self):
         cr = {
@@ -250,6 +256,11 @@ class User(db.Model, Model):
     def comments_link(self):
         comments_link = u'<a href="/user/{}/comment/list">评论</a>'.format(self.id)
         return comments_link
+
+    @property
+    def user_link(self):
+        user_link = u'<a href="/user/{}">{}</a>'.format(self.id, self.username)
+        return user_link
 
     def is_male(self):
         return  self.sex == 'male'

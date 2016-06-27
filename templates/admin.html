@@ -150,12 +150,6 @@
 
 
 {% block main_content_header_titles_admin %}
-
-{#    {% if current_user is not none %}#}
-{#        <li><a href="/user/{{ current_user.id }}">{{ current_user.username }}</a></li>#}
-{#    {% endif %}#}
-{#    <li><a href="/login">登 录</a></li>#}
-{#    {{ super() }}#}
     {% if is_admin %}
         <li><a href="/channel/list" class="active">频道编辑</a></li>
         <li><a href="">用户列表</a></li>

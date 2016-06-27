@@ -34,7 +34,9 @@
                         <td>{{ c.post_link | safe }}</td>
                         <td>
                             {{ c.content }}
+                            {% if is_admin or is_author(current_user) %}
                              <a href="/comment/delete/{{ c.id }}"><i class="fa fa-times co-delete"></i></a>
+                            {% endif %}
                         </td>
                         <td>{{ c.time }}</td>
                     </tr>

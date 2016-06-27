@@ -147,6 +147,17 @@ def role_delete(role_id):
         # flash('不好意思,你没有权限访问此页.')
         abort(401)
 
+@app.route('/role/update/<role_id>', methods=['POST'])
+def role_update(role_id):
+    r = Role.query.filter_by(id=role_id).first()
+    u = current_user()
+    if is_administrator(u):
+        r.update(request.form)
+        r.save()
+        return redirect(url_for('channels_roles'))
+    else:
+        abort(401)
+
 
 @app.route('/channel/list')
 def channels_roles():
@@ -212,6 +223,19 @@ def channel_view(channel_id):
         return redirect(url_for('login_view'))
 
 
+@app.route('/channel/update/<channel_id>', methods=['POST'])
+def channel_update(channel_id):
+    c = Channel.query.filter_by(id=channel_id).first()
+    u = current_user()
+    if is_administrator(u):
+        c.update(request.form)
+        c.save()
+        return redirect(url_for('channels_roles'))
+    else:
+        abort(401)
+
+
+
 @app.route('/post/add', methods=['POST'])
 def post_add():
     user = current_user()
@@ -221,13 +245,27 @@ def post_add():
         p = Post(request.json)
         p.user = user
         p.save()
-        cid = p.channel_id
+        # cid = p.channel_id
+        post = p.post_row()
+        log('post add, dict: ', post)
+        response_data = {
+            'id': post.get('id', ''),
+            'link': post.get('link' ,''),
+            'time': post.get('time', ''),
+            'part_content': post.get('part_content', ''),
+            'author_link': post.get('author_link', ''),
+            'is_author': True,
+        }
+        j = json.dumps(response_data, indent=2)
+        log('json dumps post: ', j)
+        return json.dumps(response_data, indent=2)
+
         # responseData = {
         #     'channel_name': c.name,
         #     'channel_id': c.id,
         # }
         # return json.dumps(responseData, indent=2)
-        return redirect(url_for('channel_view', channel_id=cid))
+        # return redirect(url_for('channel_view', channel_id=cid))
 
 
 
@@ -331,13 +369,23 @@ def register():
 def user_view(user_id):
     u = User.query.filter_by(id=user_id).first()
     log ('user-view:', u)
+    user = current_user()
     can_edit = False
-    if is_current_user(u) or is_administrator(u):
+    if is_current_user(u) or is_administrator(user):
         can_edit = True
     log('can_edit: ', can_edit)
-    html = render_template('user.html', user=u, can_edit=can_edit)
-    log('user.html: ', html)
-    return html
+    return render_template('user.html', user=u, can_edit=can_edit)
+
+
+@app.route('/user/list')
+def users():
+    users = User.query.all()
+    user = current_user()
+    if is_administrator(user):
+        return render_template('users.html', users=users)
+    else:
+        abort(401)
+
 
 @app.route('/user/<user_id>/post/list')
 def user_posts(user_id):
@@ -374,7 +422,9 @@ def user_delete(user_id):
 @app.route('/admin/users/update/<user_id>')
 def user_update_view(user_id):
     u = User.query.filter_by(id=user_id).first()
-    return render_template('user_update.html', user=u)
+    user = current_user()
+    can_edit = u==user or is_administrator(user)
+    return render_template('user_update.html', user=u, can_edit=can_edit)
 
 
 @app.route('/admin/users/update/<user_id>', methods=['POST'])

@@ -6,7 +6,25 @@
 {% endblock %}
 
 {% block script %}
+{#    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>#}
     <script type="text/javascript">
+        var appendNewPost = function(postJson) {
+            var p = postJson;
+            var postHtml = '<div class="templatemo-content-widget white-bg col-2">' +
+{#                        {% if is_admin or p.is_author(user) %}#}
+                    '       <a href="/post/delete/' + p.id + '><i class="fa fa-times"></i></a>' +
+{#                        {% endif %}#}
+
+                    '    <div class="square" style="margin-right: 10px;"></div>' +
+                    '    <h2 class="templatemo-inline-block">'+ p.link + '</h2>' +
+                    '    <hr>' +
+                    '    <p>' +  p.author_link  + '发表于:' +  p.time + '</p>' +
+                    '    <p>' + p.part_content + '</p>' +
+                    '</div>';
+            var postList = $('.co-posts');
+            postList.append(postHtml);
+        };
+
         var addPost = function () {
             $('#id-button-write-post').on('click', function () {
                 console.log('点击增加文章');
@@ -29,8 +47,10 @@
                     data: postData,
                     contentType: 'application/json',
                     success: function (d) {
-                        r = JSON.parse(d);
-                        console.log('已加文章: ', title);
+                        p = JSON.parse(d);
+                        console.log('已加文章: ', p);
+                        console.log('p.id:',p.id);
+                        appendNewPost(p);
                     }
                 });
             });
@@ -50,14 +70,14 @@
 {% block main_content_body %}
     <div class="templatemo-content-container">
         {% block main_content_body_posts %}
-            <div class="templatemo-flex-row flex-content-row">
+            <div class="templatemo-flex-row flex-content-row co-posts">
                 {% for p in posts %}
                     <div class="templatemo-content-widget white-bg col-2">
                         {% if is_admin or p.is_author(user) %}
                             <a href="/post/delete/{{ p.id }}"><i class="fa fa-times"></i></a>
                         {% endif %}
 
-                        <div class="square"></div>
+                        <div class="square" style="margin-right: 10px;"></div>
                         <h2 class="templatemo-inline-block">{{ p.link | safe }}</h2>
                         <hr>
                         <p>{{ p.author_link | safe }} 发表于: {{ p.time }}</p>

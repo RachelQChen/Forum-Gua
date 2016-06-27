@@ -9,51 +9,60 @@
 {% block main_content_body %}
     <div class="templatemo-flex-row flex-content-row">
         <div class="templatemo-content-widget white-bg col-2">
-              <i class="fa fa-times"></i>
-              <div class="media margin-bottom-30">
+            <i class="fa fa-times"></i>
+            <div class="media margin-bottom-30">
                 <div class="media-left padding-right-25">
-                  <a href="#">
-                    <img class="media-object img-circle templatemo-img-bordered" src="{{ url_for('static', filename="images/person.jpg") }}" alt="Sunset">
-                  </a>
+                    <a href="#">
+                        <img class="media-object img-circle templatemo-img-bordered"
+                             src="{{ url_for('static', filename="images/person.jpg") }}" alt="Sunset">
+                    </a>
                 </div>
                 <div class="media-body">
-                  <h2 class="media-heading text-uppercase blue-text">{{ user.username }}</h2>
-                  <p>{{ user.sex }}  |  {{ user.note }}</p>
+                    <h2 class="media-heading text-uppercase blue-text">{{ user.username }}</h2>
+                    <p>{{ user.sex }} | {{ user.note }}</p>
                 </div>
-              </div>
-              <div class="table-responsive">
+            </div>
+            <div class="table-responsive">
                 <table class="table">
-                  <tbody>
+                    <tbody>
                     <tr>
-                      <td><div class="circle green-bg"></div></td>
-                      <td>{{ user.role.name }}</td>
-                      <td>{{ user.role.id }}</td>
+                        <td>
+                            <div class="circle green-bg"></div>
+                        </td>
+                        <td>{{ user.role.name }}</td>
+                        <td>{{ user.role.id }}</td>
                     </tr>
                     <tr>
-                      <td><div class="circle pink-bg"></div></td>
-                      <td>{{ user.posts_link | safe }}</td>
-                      <td>{{ user.posts.count() }}</td>
+                        <td>
+                            <div class="circle pink-bg"></div>
+                        </td>
+                        <td>{{ user.posts_link | safe }}</td>
+                        <td>{{ user.posts.count() }}</td>
                     </tr>
                     <tr>
-                      <td><div class="circle blue-bg"></div></td>
-                      {% if can_edit %}
-                        <td>{{ user.comments_link | safe }}</td>
-                      {% else %}
-                        <td>评 论</td>
-                      {% endif %}
-                      <td>{{ user.comments.count() }}</td>
+                        <td>
+                            <div class="circle blue-bg"></div>
+                        </td>
+                        {% if can_edit %}
+                            <td>{{ user.comments_link | safe }}</td>
+                        {% else %}
+                            <td>评 论</td>
+                        {% endif %}
+                        <td>{{ user.comments.count() }}</td>
                     </tr>
                     {% if can_edit %}
-                    <tr>
-                      <td><div class="circle yellow-bg"></div></td>
-                      <td><a href="/admin/users/update/{{ user.id }}">编辑用户信息</a></td>
-                      <td></td>
-                    </tr>
+                        <tr>
+                            <td>
+                                <div class="circle yellow-bg"></div>
+                            </td>
+                            <td><a href="/admin/users/update/{{ user.id }}">编辑用户信息</a></td>
+                            <td>#</td>
+                        </tr>
                     {% endif %}
-                  </tbody>
+                    </tbody>
                 </table>
-              </div>
             </div>
+        </div>
     </div>
 {% endblock %}
 
