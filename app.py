@@ -8,7 +8,7 @@ from flask import abort
 from flask import flash
 from flask import session
 
-import uuid
+# import uuid
 from flask import json
 
 from models import Channel
@@ -326,22 +326,21 @@ def login():
     u = User(request.form)
     user = User.query.filter_by(username=u.username).first()
     log('login-user: ', user)
-    if user is not None:
+    if user is None:
+        log('用户登录失败')
+        flash('用户名不存在.')
+        return redirect(url_for('login_view'))
+    else:
         u.salt = user.salt
         u.hash_password(request.form)
         if u.validate_login(user):
             log('用户登录成功, user_id: ', user.id)
             session['user_id'] = user.id
-            # flash('您已成功登录!')
-            # r = make_response()
-            # cookie_id = str(uuid.uuid4())
-            # cookie_dict[cookie_id] = user
-            # r.set_cookie('cookie_id', cookie_id)
             return redirect(url_for('user_view', user_id=user.id))
-    else:
-        log('用户登录失败')
-        flash('登录失败,请检查您的用户名和密码.')
-        return redirect(url_for('login_view'))
+        else:
+            log('用户登录失败')
+            flash('登录失败,请检查您的用户名和密码.')
+            return redirect(url_for('login_view'))
 
 
 @app.route('/signout/<user_id>')

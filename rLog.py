@@ -16,5 +16,4 @@ def log(*args):
     print(formated_time, *args)
     # print(time_str + ' ' + arg_str + '\r\n')
 
-log(1,2,3)
 
