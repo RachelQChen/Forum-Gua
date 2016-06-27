@@ -5,14 +5,12 @@
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">
     <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/co-style.css') }}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/bootstrap-filestyle.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/templatemo-script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/co-script.js') }}"></script>
     {% block script %}{% endblock %}
     {% block style %}{% endblock %}
     {% endblock %}
