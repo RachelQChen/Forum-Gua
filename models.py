@@ -260,6 +260,13 @@ class User(db.Model, Model):
         self.sex = form.get('sex', self.sex)
         self.note = form.get('note', self.note)
 
+    def post_list(self):
+        posts = self.posts
+        plist = []
+        for p in posts:
+            plist.append(p.post_row())
+        return plist
+
     def validate_username(self):
         if User.query.filter_by(username=self.username).first() is None:
             return True

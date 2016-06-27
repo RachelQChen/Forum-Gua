@@ -66,7 +66,7 @@ def cid_rid_for_cookie():
 
 @app.route('/')
 def index():
-    return redirect(url_for('channels'))
+    return redirect(url_for('channels_roles'))
 
 
 @app.route('/admin')
@@ -134,7 +134,7 @@ def role_add():
         abort(401)
 
 
-@app.route('/role/<role_id>')
+@app.route('/role/delete/<role_id>')
 def role_delete(role_id):
     user = current_user()
     is_admin = is_administrator(user)
@@ -142,7 +142,7 @@ def role_delete(role_id):
         r = Role.query.filter_by(id=role_id).first()
         if r is not None:
             r.delete()
-        return redirect(url_for('admin_view'))
+        return redirect(url_for('channels_roles'))
     else:
         # flash('不好意思,你没有权限访问此页.')
         abort(401)
@@ -190,7 +190,7 @@ def channel_delete(channel_id):
         c = Channel.query.filter_by(id=channel_id).first()
         if c is not None:
             c.delete()
-        return redirect(url_for('channels'))
+        return redirect(url_for('channels_roles'))
     else:
         # flash('不好意思,你没有权限访问此页.')
         abort(401)
@@ -342,7 +342,7 @@ def user_view(user_id):
 @app.route('/user/<user_id>/post/list')
 def user_posts(user_id):
     u = User.query.filter_by(id=user_id).first()
-    posts = u.posts
+    posts = u.post_list()
     return render_template('posts.html', posts=posts)
 
 

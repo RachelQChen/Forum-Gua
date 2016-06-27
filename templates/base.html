@@ -24,8 +24,10 @@
 <div class="templatemo-flex-row">
     <div class="templatemo-sidebar">
         <header class="templatemo-site-header">
-            <div class="square"></div>
-            <h1> Cocode</h1>
+            <a href="/channel/list">
+                <div class="square"></div>
+                <h1> Cocode</h1>
+            </a>
         </header>
         <div class="profile-photo-container">
             <img src="{{ url_for('static', filename='images/profile-photo.jpg') }}" class="img-responsive">
@@ -52,19 +54,22 @@
     </div>
     <!-- Main content -->
     {% block main_content %}
-    {% block main_content_header %}
     <div class="templatemo-content col-1 light-gray-bg">
+        {% block main_content_header %}
         <div class="templatemo-top-nav-container">
             <div class="row">
                 <nav class="templatemo-top-nav col-lg-12 col-md-12">
                     <ul class="text-uppercase">
                         {% block main_content_header_titles %}
-                        {% if is_admin %}
-                            <li><a href="/admin" class="active">管理</a></li>
+                            {% block main_content_header_titles_admin %}
+                                {% if is_admin %}
+                            <li><a href="/admin">权限管理</a></li>
+                            <li><a href="/channel/list">频道编辑</a></li>
                             <li><a href="">用户列表</a></li>
                         {% endif %}
+                            {% endblock %}
                         {% if current_user is not none %}
-                            <li><a href="/user/{{ current_user.id }}">{{ current_user.username }}</a></li>
+                            <li><a href="/user/{{ current_user.id }}" class="active">{{ current_user.username }}</a></li>
                         {% endif %}
                         <li><a href="/login">登 录</a></li>
                         {% endblock %}

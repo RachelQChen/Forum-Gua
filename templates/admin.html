@@ -2,6 +2,10 @@
 
 {% block title %}管理论坛{% endblock %}
 
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
 {% block script %}
     {{ super() }}
     <script type="text/javascript">
@@ -145,14 +149,17 @@
 {% endblock %}
 
 
-{% block main_content_header_titles %}
+{% block main_content_header_titles_admin %}
+
+{#    {% if current_user is not none %}#}
+{#        <li><a href="/user/{{ current_user.id }}">{{ current_user.username }}</a></li>#}
+{#    {% endif %}#}
+{#    <li><a href="/login">登 录</a></li>#}
+{#    {{ super() }}#}
     {% if is_admin %}
+        <li><a href="/channel/list" class="active">频道编辑</a></li>
         <li><a href="">用户列表</a></li>
     {% endif %}
-    {% if current_user is not none %}
-        <li><a href="/user/{{ current_user.id }}">{{ current_user.username }}</a></li>
-    {% endif %}
-    <li><a href="/login">登 录</a></li>
 {% endblock %}
 
 {% block main_content_body %}
@@ -168,12 +175,16 @@
                         <div class="margin-right-15 templatemo-inline-block">
                             <input id="id-{{ c.id }}-{{ r.id }}" class="choose_role" type="checkbox" name="{{ c.id }}"
                                    value="{{ r.id }}">
-                            <label for="c3" class="font-weight-400"><span></span>{{ r.name }}</label>
+                            <label for="id-{{ c.id }}-{{ r.id }}" class="font-weight-400">
+                                <span></span>{{ r.name }}
+                            </label>
                         </div>
                     {% endfor %}
                 </div>
             </div>
         {% endfor %}
+        <button id="id-button-role-for-channel" class="templatemo-blue-button">提 交</button>
+        <hr>
         <fieldset>
             <textarea id="id-text-channel-name" name="name" class="form-control" placeholder="创建频道" required></textarea>
             <button id="id-button-create-channel" class="templatemo-blue-button float-right">创 建</button>
