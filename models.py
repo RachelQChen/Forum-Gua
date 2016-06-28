@@ -222,7 +222,7 @@ class User(db.Model, Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String())
-    password_hash = db.Column(db.String())
+    hashed_password = db.Column(db.String())
     salt = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
     sex = db.Column(db.String())
@@ -248,7 +248,7 @@ class User(db.Model, Model):
         else:
             hash1 = hashlib.md5(psw.encode('ascii')).hexdigest()
             hash2 = hashlib.md5((hash1 + self.salt).encode('ascii')).hexdigest()
-        self.password_hash = hash2
+        self.hashed_password = hash2
 
     @property
     def posts_link(self):
@@ -274,7 +274,7 @@ class User(db.Model, Model):
     def update(self, form):
         self.username = form.get('username', self.username)
         psw = form.get('password', self.password)
-        self.password_hash = self.hash_password(psw)
+        self.hashed_password = self.hash_password(psw)
         self.sex = form.get('sex', self.sex)
         self.note = form.get('note', self.note)
 
@@ -301,7 +301,7 @@ class User(db.Model, Model):
 
     def validate_register(self):
         username_len = len(self.username) >= 6
-        password_len = self.password_hash != 'too-short'
+        password_len = self.hashed_password != 'too-short'
         if self.validate_username():
             return username_len and password_len
         else:
@@ -310,11 +310,11 @@ class User(db.Model, Model):
     def validate_login(self, user):
         log('刚输入的username: ', self.username)
         log('被对比的username: ', user.username)
-        log('刚输入的psw-hash: ', self.password_hash)
-        log('被对比的psw-hash: ', user.password_hash)
+        log('刚输入的psw-hash: ', self.hashed_password)
+        log('被对比的psw-hash: ', user.hashed_password)
         if isinstance(user, User):
             username_equals = self.username == user.username
-            password_equals = self.password_hash == user.password_hash
+            password_equals = self.hashed_password == user.hashed_password
             return username_equals and password_equals
         else:
             return False
