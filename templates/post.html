@@ -22,6 +22,7 @@
                             '   <a href="/comment/delete/' + c.id + '><i class="fa fa-times co-delete"></i></a>' +
                             '</p>';
             var commentList = $('.co-comments');
+            console.log('生成的comment html:', commentHtml);
             commentList.append(commentHtml);
         };
 
