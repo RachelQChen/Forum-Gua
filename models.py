@@ -191,8 +191,8 @@ class Comment(db.Model, Model):
 
     def __init__(self, form):
         super(Comment, self).__init__()
-        self.content = form.get('content', '')
-        self.post_id = form.get('post_id', None)
+        self.content = form.get('content')
+        self.post_id = form.get('post_id')
 
     def comment_row(self):
         u = User.query.filter_by(id=self.user_id).first()

@@ -249,16 +249,9 @@ def post_add():
         'author_link': post.get('author_link', ''),
         'is_author': True,
     }
-    j = json.dumps(response_data, indent=2)
-    log('json dumps post: ', j)
+    # j = json.dumps(response_data, indent=2)
+    # log('json dumps post: ', j)
     return json.dumps(response_data, indent=2)
-
-        # responseData = {
-        #     'channel_name': c.name,
-        #     'channel_id': c.id,
-        # }
-        # return json.dumps(responseData, indent=2)
-        # return redirect(url_for('channel_view', channel_id=cid))
 
 
 @app.route('/post/delete/<post_id>')
@@ -287,18 +280,35 @@ def post_view(post_id):
     return render_template('post.html', post=post)
 
 
+# @app.route('/comment/add', methods=['POST'])
+# @login_required
+# def comment_add():
+#     # user = current_user()
+#     # if user is None:
+#     #     return redirect(url_for('login_view'))
+#     # else:
+#     c = Comment(request.form)
+#     c.user = current_user()
+#     c.save()
+#     # log('comment-post by form:', c.post)
+#     return redirect(url_for('post_view', post_id=c.post_id))
+
+
 @app.route('/comment/add', methods=['POST'])
 @login_required
 def comment_add():
-    # user = current_user()
-    # if user is None:
-    #     return redirect(url_for('login_view'))
-    # else:
-    c = Comment(request.form)
+    c = Comment(request.json)
     c.user = current_user()
     c.save()
-    # log('comment-post by form:', c.post)
-    return redirect(url_for('post_view', post_id=c.post_id))
+    comment = c.comment_row()
+    log('comment add, dict: ', comment)
+    response_data = {
+        'id': comment.get('id', ''),
+        'user_link': comment.get('user_link', ''),
+        'time': comment.get('time', ''),
+        'content': comment.get('content', ''),
+    }
+    return json.dumps(response_data, indent=2)
 
 
 @app.route('/comment/delete/<comment_id>')
