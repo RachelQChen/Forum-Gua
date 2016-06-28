@@ -222,7 +222,7 @@ class User(db.Model, Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String())
-    hashed_password = db.Column(db.String())
+    password_hash = db.Column(db.String())
     salt = db.Column(db.String())
     created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
     sex = db.Column(db.String())
@@ -248,7 +248,7 @@ class User(db.Model, Model):
         else:
             hash1 = hashlib.md5(psw.encode('ascii')).hexdigest()
             hash2 = hashlib.md5((hash1 + self.salt).encode('ascii')).hexdigest()
-        self.hashed_password = hash2
+        self.password_hash = hash2
 
     @property
     def posts_link(self):
@@ -272,11 +272,39 @@ class User(db.Model, Model):
         return self.sex == 'female'
 
     def update(self, form):
-        self.username = form.get('username', self.username)
-        psw = form.get('password', self.password)
-        self.hashed_password = self.hash_password(psw)
-        self.sex = form.get('sex', self.sex)
-        self.note = form.get('note', self.note)
+        info_dict = dict(form)
+        log('new_info dict:', info_dict)
+        update_info = {}
+        for k, v in info_dict.items():
+            if v[0] != '':
+                update_info[k] = v[0]
+        self.username = update_info.get('username', self.username)
+        self.sex = update_info.get('sex', self.sex)
+        self.note = update_info.get('note', self.note)
+        psw = update_info.get('password', None)
+        if psw is None:
+            self.password_hash = self.password_hash
+        else:
+            self.password_hash = self.hash_password(form)
+
+    #     new_sex = form.get('sex'),
+    #     new_note = form.get('note'),
+    #     new_psw = form.get('password'),
+    #
+    #     new_username = {
+    #         'new_value': form.get('username'),
+    #         'default': self.username,
+    #     }
+    #     new_sex = {
+    #         ''
+    #     }
+    #
+    #
+    #     for k,v in new_info:
+    #         if v == '':
+    #             k =
+    #
+
 
     def post_list(self):
         posts = self.posts
@@ -301,7 +329,7 @@ class User(db.Model, Model):
 
     def validate_register(self):
         username_len = len(self.username) >= 6
-        password_len = self.hashed_password != 'too-short'
+        password_len = self.password_hash != 'too-short'
         if self.validate_username():
             return username_len and password_len
         else:
@@ -310,11 +338,11 @@ class User(db.Model, Model):
     def validate_login(self, user):
         log('刚输入的username: ', self.username)
         log('被对比的username: ', user.username)
-        log('刚输入的psw-hash: ', self.hashed_password)
-        log('被对比的psw-hash: ', user.hashed_password)
+        log('刚输入的psw-hash: ', self.password_hash)
+        log('被对比的psw-hash: ', user.password_hash)
         if isinstance(user, User):
             username_equals = self.username == user.username
-            password_equals = self.hashed_password == user.hashed_password
+            password_equals = self.password_hash == user.password_hash
             return username_equals and password_equals
         else:
             return False

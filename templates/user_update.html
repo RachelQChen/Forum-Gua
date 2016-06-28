@@ -2,7 +2,7 @@
 
 
 {% block title %}
-    编辑 {{ user.name }}
+    编辑 {{ current_user.name }}
 {% endblock %}
 
 {% block main_content_body %}
@@ -10,26 +10,26 @@
     <div class="panel panel-default margin-10" style="margin: 30px;">
         <div class="panel-heading"><h2 class="text-uppercase">编辑个人信息</h2></div>
         <div class="panel-body">
-            <form action="/admin/users/update/{{ user.id }}" method="post" class="templatemo-login-form">
+            <form action="/user/update/{{ current_user.id }}" method="post" class="templatemo-login-form">
                 <div class="form-group">
                     <label for="inputEmail">修改用户名</label>
-                    <input name="username" class="form-control" id="inputEmail" placeholder="{{ user.username }}">
+                    <input name="username" class="form-control" id="inputEmail" placeholder="{{ current_user.username }}(不少于6位)">
                 </div>
                 <div class="form-group">
                     <label for="inputEmail">修改密码</label>
-                    <input type="password" class="form-control" placeholder="新密码" name="password">
+                    <input type="password" class="form-control" placeholder="新密码(不少于6位)" name="password">
                 </div>
                 <div class="form-group">
                     <label for="inputEmail">编辑自我介绍</label>
-                    <input name="note" class="form-control" placeholder="{{ user.note }}">
+                    <input name="note" class="form-control" placeholder="{{ current_user.note }}">
                 </div>
                 <div class="col-lg-12">
                     <div class="margin-right-15 templatemo-inline-block">
-                        <input type="radio" name="sex" id="male" value="male" checked="{{ user.is_male() }}">
+                        <input type="radio" name="sex" id="male" value="male" checked="{{ current_user.is_male() }}">
                         <label for="male" class="font-weight-400"><span></span>男</label>
                     </div>
                     <div class="margin-right-15 templatemo-inline-block">
-                        <input type="radio" name="sex" id="female" value="female" checked="{{ user.is_female() }}">
+                        <input type="radio" name="sex" id="female" value="female" checked="{{ current_user.is_female() }}">
                         <label for="female" class="font-weight-400"><span></span>女</label>
                     </div>
                 </div>

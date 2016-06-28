@@ -389,6 +389,13 @@ def register():
     log('注册form: ', form)
     log('空username({})'.format(form.get('username')))
     log('若输入为空,得到的是什么类型?',type(form.get('username')))
+    log('dict(form):', dict(form))
+    # data = request.get_data()
+    # log('注册的原始数据request.get_data():({})'.format(data))
+    # decoded_data = data.decode('utf-8')
+    # log('注册的原始数据json化:({})'.format(json.loads(decoded_data)))
+    # data2 = request.data
+    # log('request.data:', data2)
     u = User(form)
     u.hash_password(form)
     if u.validate_register():
