@@ -8,7 +8,6 @@ from flask import abort
 from flask import flash
 from flask import session
 
-# import uuid
 from flask import json
 
 from models import Channel
@@ -27,31 +26,7 @@ from decorators import is_current_user
 app = Flask(__name__)
 
 app.secret_key = 'asdjf1923'
-cookie_dict = {}
-
-
-# def current_user():
-#     uid = session.get('user_id')
-#     if uid is not None:
-#         user = User.query.filter_by(id=uid).first()
-#         return user
-#     else:
-#         return None
-
-
-# def is_current_user(user):
-#     if user is None:
-#         return False
-#     else:
-#         uid = session.get('user_id')
-#         return user.id == uid
-#
-#
-# def is_administrator(user):
-#     if user is None:
-#         return False
-#     else:
-#         return user.role_id == 1
+# cookie_dict = {}
 
 
 # cookied 实时存入对应权限的channel id, role id, 发送给前端解析.
@@ -67,8 +42,8 @@ def cid_rid_for_cookie():
                 'cid-rid': cid_rid,
             }
             cid_rid_list.append(data)
-    cookie_dict['cid_rid_list'] = cid_rid_list
-    log('含有cid-rid的cookie_dict: ', cookie_dict)
+    # cookie_dict['cid_rid_list'] = cid_rid_list
+    # log('含有cid-rid的cookie_dict: ', cookie_dict)
     return cid_rid_list
 
 
@@ -389,13 +364,8 @@ def register():
     log('注册form: ', form)
     log('空username({})'.format(form.get('username')))
     log('若输入为空,得到的是什么类型?',type(form.get('username')))
-    log('dict(form):', dict(form))
-    # data = request.get_data()
-    # log('注册的原始数据request.get_data():({})'.format(data))
-    # decoded_data = data.decode('utf-8')
-    # log('注册的原始数据json化:({})'.format(json.loads(decoded_data)))
-    # data2 = request.data
-    # log('request.data:', data2)
+    log('注册dict(form):', dict(form))
+
     u = User(form)
     u.hash_password(form)
     if u.validate_register():
