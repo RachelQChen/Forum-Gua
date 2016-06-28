@@ -9,14 +9,21 @@
     <script type="text/javascript">
         var appendNewPost = function(postJson) {
             var p = postJson;
-            var postHtml = '<div class="templatemo-content-widget white-bg col-2">' +
-                    '       <a href="/post/delete/' + p.id + '><i class="fa fa-times"></i></a>' +
-                    '       <div class="square" style="margin-right: 10px;"></div>' +
-                    '       <h2 class="templatemo-inline-block">'+ p.link + '</h2>' +
-                    '       <hr>' +
-                    '       <p>' +  p.author_link  + '发表于:' +  p.time + '</p>' +
-                    '       <p>' + p.part_content + '</p>' +
-                    '   </div>';
+            var postHtml = (
+                    `
+                        <div class="templatemo-content-widget white-bg col-2">
+                            <a  class="delete-post" data-id=${ p.id }>
+                                <i class="fa fa-times"></i>
+                            </a>
+                            <div class="square" style="margin-right: 10px;"></div>
+                            <h2 class="templatemo-inline-block">${ p.link }</h2>
+                            <hr>
+                            <p>${ p.author_link  }   发表于: ${ p.time }</p>
+                            <p>${ p.part_content }</p>
+                        </div>
+                    `
+            );
+
             var postList = $('.co-posts');
             postList.append(postHtml);
         };
@@ -52,8 +59,27 @@
             });
         };
 
+        var deletePost = function() {
+            $('.delete-post').on('click', function(){
+                console.log('点击删除文章:', $(this));
+                var post_id = $(this).data('id');
+                console.log('post_id: ', post_id);
+                post = $(this).parentsUntil('#id-posts');
+                console.log('选中父节点:', post);
+                $.ajax({
+                    url: '/post/delete/' + post_id,
+                    type: 'GET',
+                    success: function (pid) {
+                        console.log('已删文章id: ', pid);
+                        post.remove()
+                    }
+                });
+            });
+        };
+
         var __main = function () {
             addPost();
+            deletePost();
         };
 
         $(document).ready(function () {
@@ -66,11 +92,13 @@
 {% block main_content_body %}
     <div class="templatemo-content-container">
         {% block main_content_body_posts %}
-            <div class="templatemo-flex-row flex-content-row co-posts">
+            <div id="id-posts" class="templatemo-flex-row flex-content-row co-posts">
                 {% for p in posts %}
                     <div class="templatemo-content-widget white-bg col-2">
                         {% if is_admin or p.is_author(current_user) %}
-                            <a href="/post/delete/{{ p.id }}"><i class="fa fa-times"></i></a>
+                            <a class="delete-post" data-id={{ p.id }}>
+                                <i class="fa fa-times"></i>
+                            </a>
                         {% endif %}
 
                         <div class="square" style="margin-right: 10px;"></div>
@@ -88,7 +116,7 @@
                     <label for="id-text-post-title"></label>
                     <input type="text" class="form-control" id="id-text-post-title" placeholder="标题" name="title"
                            required>
-                <textarea class="form-control" id="id-text-post-content" rows="3" placeholder="写点啥......" name="content"
+                    <textarea class="form-control" id="id-text-post-content" rows="3" placeholder="写点啥......" name="content"
                           required></textarea>
                     <input type="hidden" id="id-post-channel" name="channel_id" value="{{ channel.id }}">
                     <button id="id-button-write-post" class="templatemo-blue-button float-right">发 布</button>
@@ -99,137 +127,3 @@
 {% endblock %}
 
 
-{#<!DOCTYPE html>#}
-{#<html lang="zh">#}
-{#<head>#}
-{#    <meta charset="UTF-8">#}
-{#    <title>channel</title>#}
-{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
-{#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">#}
-{#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">#}
-{#    <link href="{{ url_for('static', filename='css/font-awesome.min.css') }}" rel="stylesheet">#}
-{#    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">#}
-{#    <link href="{{ url_for('static', filename='css/co-style.css') }}" rel="stylesheet">#}
-{#    <script src="{{ url_for('static', filename='js/bootstrap-filestyle.min.js') }}"></script>#}
-{#    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>#}
-{#    <script src="{{ url_for('static', filename='js/co-script.js') }}"></script>#}
-{#    <script src="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js"></script>#}
-{#    <script type="text/javascript">#}
-{#        var addPost = function () {#}
-{#            $('#id-button-write-post').on('click', function () {#}
-{#                console.log('点击增加文章');#}
-{#                var title = $('#id-text-post-title').val();#}
-{#                console.log('新文章题目: ', title);#}
-{#                var content = $('#id-text-post-content').val();#}
-{#                console.log('新文章内容: ', content);#}
-{#                var channel_id = $('#id-post-channel').val();#}
-{#                console.log('文章的频道: ', channel_id);#}
-{#                var data = {#}
-{#                    title: title,#}
-{#                    content: content,#}
-{#                    channel_id: channel_id,#}
-{#                };#}
-{#                postData = JSON.stringify(data);#}
-{#                console.log('postData: ', postData);#}
-{#                $.ajax({#}
-{#                    url: '/post/add',#}
-{#                    type: 'POST',#}
-{#                    data: postData,#}
-{#                    contentType: 'application/json',#}
-{#                    success: function (d) {#}
-{#                                                r = JSON.parse(d);#}
-{#                        console.log('已加文章: ', title);#}
-{#                    }#}
-{#                });#}
-{#            });#}
-{#        };#}
-{##}
-{#        var __main = function () {#}
-{#            addPost();#}
-{#        };#}
-{##}
-{#        $(document).ready(function () {#}
-{#            __main();#}
-{#        });#}
-{#    </script>#}
-{##}
-{#</head>#}
-{##}
-{#<body>#}
-{#<!-- Left column -->#}
-{#<div class="templatemo-flex-row">#}
-{#    <div class="templatemo-sidebar">#}
-{#        <header class="templatemo-site-header">#}
-{#            <div class="square"></div>#}
-{#            <h1> Cocode</h1>#}
-{#        </header>#}
-{#        <div class="profile-photo-container">#}
-{#            <img src="{{ url_for('static', filename='images/profile-photo.jpg') }}" class="img-responsive">#}
-{#            <div class="profile-photo-overlay"></div>#}
-{#        </div>#}
-{#        <br>#}
-{#        <div class="mobile-menu-icon">#}
-{#            <i class="fa fa-bars"></i>#}
-{#        </div>#}
-{#        <nav class="templatemo-left-nav">#}
-{#            <ul>#}
-{#                <li><a href="/channel/list" class="active"><i class="fa fa-home fa-fw"></i>频 道</a></li>#}
-{#                {% for c in channels %}#}
-{#                    <li>#}
-{#                        <a href="/channel/{{ c.id }}">#}
-{#                            <i class="fa fa-map-marker fa-fw"></i>#}
-{#                            {{ c.name }}#}
-{#                        </a>#}
-{#                    </li>#}
-{#                {% endfor %}#}
-{#                <li><a href="#"><i class="fa fa-eject fa-fw"></i>登 出</a></li>#}
-{#            </ul>#}
-{#        </nav>#}
-{#    </div>#}
-{#    <!-- Main content -->#}
-{#    <div class="templatemo-content col-1 light-gray-bg">#}
-{#        <div class="templatemo-top-nav-container">#}
-{#            <div class="row">#}
-{#                <nav class="templatemo-top-nav col-lg-12 col-md-12">#}
-{#                    <ul class="text-uppercase">#}
-{#                        {% if is_admin %}#}
-{#                            <li><a href="/admin" class="active">管理</a></li>#}
-{#                            <li><a href="">用户列表</a></li>#}
-{#                        {% endif %}#}
-{#                        <li><a href="/channel/{{ channel.id }}" class="active">{{ channel.name }}</a></li>#}
-{#                        <li><a href="/user/{{ user.id }}">{{ user.username }}</a></li>#}
-{#                        <li><a href="/login">登录</a></li>#}
-{#                    </ul>#}
-{#                </nav>#}
-{#            </div>#}
-{#        </div>#}
-{#        <div class="templatemo-content-container">#}
-{#            <div class="templatemo-flex-row flex-content-row">#}
-{#                {% for p in posts %}#}
-{#                    <div class="templatemo-content-widget white-bg col-2">#}
-{#                        {% if is_admin or p.is_author(user) %}#}
-{#                            <a href="/post/delete/{{ p.id }}"><i class="fa fa-times"></i></a>#}
-{#                        {% endif %}#}
-{##}
-{#                        <div class="square"></div>#}
-{#                        <h2 class="templatemo-inline-block">{{ p.link | safe }}</h2>#}
-{#                        <hr>#}
-{#                        <p>{{ p.author_link | safe }} 发表于: {{ p.time }}</p>#}
-{#                        <p>{{ p.part_content }}</p>#}
-{#                    </div>#}
-{#                {% endfor %}#}
-{#            </div>#}
-{#                        <div class="row form-group">#}
-{#            <div class="col-lg-12 form-group">#}
-{#                <label for="id-text-post-title"></label>#}
-{#                <input type="text" class="form-control" id="id-text-post-title" placeholder="标题" name="title" required>#}
-{#                <textarea class="form-control" id="id-text-post-content" rows="3" placeholder="写点啥......" name="content"#}
-{#                          required></textarea>#}
-{#                <input type="hidden" id="id-post-channel" name="channel_id" value="{{ channel.id }}">#}
-{#                <button id="id-button-write-post" class="templatemo-blue-button float-right">发 布</button>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-{#</div>#}
-{#</body>#}
-{#</html>#}
