@@ -287,24 +287,6 @@ class User(db.Model, Model):
         else:
             self.password_hash = self.hash_password(form)
 
-    #     new_sex = form.get('sex'),
-    #     new_note = form.get('note'),
-    #     new_psw = form.get('password'),
-    #
-    #     new_username = {
-    #         'new_value': form.get('username'),
-    #         'default': self.username,
-    #     }
-    #     new_sex = {
-    #         ''
-    #     }
-    #
-    #
-    #     for k,v in new_info:
-    #         if v == '':
-    #             k =
-    #
-
 
     def post_list(self):
         posts = self.posts
