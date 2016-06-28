@@ -18,6 +18,11 @@ from models import Comment
 from models import Role
 
 from rlog import log
+from decorators import login_required
+from decorators import admin_required
+from decorators import current_user
+from decorators import is_administrator
+from decorators import is_current_user
 
 app = Flask(__name__)
 
@@ -25,28 +30,28 @@ app.secret_key = 'asdjf1923'
 cookie_dict = {}
 
 
-def current_user():
-    uid = session.get('user_id')
-    if uid is not None:
-        user = User.query.filter_by(id=uid).first()
-        return user
-    else:
-        return None
+# def current_user():
+#     uid = session.get('user_id')
+#     if uid is not None:
+#         user = User.query.filter_by(id=uid).first()
+#         return user
+#     else:
+#         return None
 
 
-def is_current_user(user):
-    if user is None:
-        return False
-    else:
-        uid = session.get('user_id')
-        return user.id == uid
-
-
-def is_administrator(user):
-    if user is None:
-        return False
-    else:
-        return user.role_id == 1
+# def is_current_user(user):
+#     if user is None:
+#         return False
+#     else:
+#         uid = session.get('user_id')
+#         return user.id == uid
+#
+#
+# def is_administrator(user):
+#     if user is None:
+#         return False
+#     else:
+#         return user.role_id == 1
 
 
 # cookied 实时存入对应权限的channel id, role id, 发送给前端解析.
@@ -73,36 +78,38 @@ def index():
 
 
 @app.route('/admin')
+@admin_required
 def admin_view():
     rs = Role.query.all()
     cs = Channel.query.all()
-    user = current_user()
-    if is_administrator(user):
-        data = cid_rid_for_cookie()
-        log('cid_rid_list: ', data)
-        json_data = json.dumps(data)
-        log('json_data: ', json_data)
-        r = make_response(render_template('admin.html', roles=rs, channels=cs))
-        log('响应r: ', r)
-        r.set_cookie('cid_rid_list', json_data)
-        return r
-    else:
-        # flash('不好意思,你没有权限访问此页.')
-        abort(401)
+    # user = current_user()
+    # if is_administrator(user):
+    data = cid_rid_for_cookie()
+    log('cid_rid_list: ', data)
+    json_data = json.dumps(data)
+    log('json_data: ', json_data)
+    r = make_response(render_template('admin.html', roles=rs, channels=cs))
+    log('响应r: ', r)
+    r.set_cookie('cid_rid_list', json_data)
+    return r
+    # else:
+    #     # flash('不好意思,你没有权限访问此页.')
+    #     abort(401)
 
 
 @app.route('/admin', methods=['POST'])
+@admin_required
 def admin():
-    user = current_user()
-    is_admin = is_administrator(user)
-    log('Is admin?', is_admin)
-    if is_admin:
-        option_json = request.json
-        Channel.update_roles(option_json)
-        response_data = cid_rid_for_cookie()
-        return json.dumps(response_data, indent=2)
-    else:
-        abort(401)
+    # user = current_user()
+    # is_admin = is_administrator(user)
+    # log('Is admin?', is_admin)
+    # if is_admin:
+    option_json = request.json
+    Channel.update_roles(option_json)
+    response_data = cid_rid_for_cookie()
+    return json.dumps(response_data, indent=2)
+    # else:
+    #     abort(401)
 
 
 # @app.route('/random', methods=['POST'])
@@ -118,148 +125,158 @@ def admin():
 
 
 @app.route('/role/add', methods=['POST'])
+@admin_required
 def role_add():
-    user = current_user()
-    is_admin = is_administrator(user)
-    log('Is admin?', is_admin)
-    if is_admin:
-        j = request.json
-        log('role-add json', type(j), j)
-        r = Role(j)
-        log('new role: ', r)
-        r.save()
-        responseData = {
-            'role_name': r.name,
-            'role_id': r.id,
-        }
-        return json.dumps(responseData, indent=2)
-    else:
-        abort(401)
+    # user = current_user()
+    # is_admin = is_administrator(user)
+    # log('Is admin?', is_admin)
+    # if is_admin:
+    j = request.json
+    log('role-add json', type(j), j)
+    r = Role(j)
+    log('new role: ', r)
+    r.save()
+    responseData = {
+        'role_name': r.name,
+        'role_id': r.id,
+    }
+    return json.dumps(responseData, indent=2)
+    # else:
+    #     abort(401)
 
 
 @app.route('/role/delete/<role_id>')
+@admin_required
 def role_delete(role_id):
-    user = current_user()
-    is_admin = is_administrator(user)
-    if is_admin:
-        r = Role.query.filter_by(id=role_id).first()
-        if r is not None:
-            r.delete()
-        return redirect(url_for('channels_roles'))
-    else:
-        # flash('不好意思,你没有权限访问此页.')
-        abort(401)
+    # user = current_user()
+    # is_admin = is_administrator(user)
+    # if is_admin:
+    r = Role.query.filter_by(id=role_id).first()
+    if r is not None:
+        r.delete()
+    return redirect(url_for('channels_roles'))
+    # else:
+    #     # flash('不好意思,你没有权限访问此页.')
+    #     abort(401)
 
 
 @app.route('/role/update/<role_id>', methods=['POST'])
+@admin_required
 def role_update(role_id):
     r = Role.query.filter_by(id=role_id).first()
-    u = current_user()
-    if is_administrator(u):
-        r.update(request.form)
-        r.save()
-        return redirect(url_for('channels_roles'))
-    else:
-        abort(401)
+    # u = current_user()
+    # if is_administrator(u):
+    r.update(request.form)
+    r.save()
+    return redirect(url_for('channels_roles'))
+    # else:
+    #     abort(401)
 
 
 @app.route('/channel/list')
+@login_required
 def channels_roles():
-    user = current_user()
-    if user is not None:
-        roles = Role.query.all()
+    # user = current_user()
+    # if user is not None:
+    roles = Role.query.all()
+    return render_template('channels.html', roles=roles)
         # role = user.role
         # channels = role.channels
         # c_rows = []
         # for c in channels:
         #     cr = c.channel_row()
         #     c_rows.append(cr)
-        return render_template('channels.html', roles=roles)
-    else:
-        return redirect(url_for('login_view'))
+
+    # else:
+    #     return redirect(url_for('login_view'))
 
 
 @app.route('/channel/add', methods=['POST'])
+@admin_required
 def channel_add():
-    user = current_user()
-    is_admin = is_administrator(user)
-    log('Is admin? ', is_admin)
-    if is_admin:
-        j = request.json
-        c = Channel(j)
-        c.save()
-        responseData = {
-            'channel_name': c.name,
-            'channel_id': c.id,
-        }
-        return json.dumps(responseData, indent=2)
-    else:
-        abort(401)
+    # user = current_user()
+    # is_admin = is_administrator(user)
+    # log('Is admin? ', is_admin)
+    # if is_admin:
+    j = request.json
+    c = Channel(j)
+    c.save()
+    responseData = {
+        'channel_name': c.name,
+        'channel_id': c.id,
+    }
+    return json.dumps(responseData, indent=2)
+    # else:
+    #     abort(401)
 
 
 @app.route('/channel/delete/<channel_id>')
+@admin_required
 def channel_delete(channel_id):
-    user = current_user()
-    is_admin = is_administrator(user)
-    if is_admin:
-        c = Channel.query.filter_by(id=channel_id).first()
-        if c is not None:
-            c.delete()
-        return redirect(url_for('channels_roles'))
-    else:
-        # flash('不好意思,你没有权限访问此页.')
-        abort(401)
+    # user = current_user()
+    # is_admin = is_administrator(user)
+    # if is_admin:
+    c = Channel.query.filter_by(id=channel_id).first()
+    if c is not None:
+        c.delete()
+    return redirect(url_for('channels_roles'))
+    # else:
+    #     # flash('不好意思,你没有权限访问此页.')
+    #     abort(401)
 
 
 @app.route('/channel/<channel_id>')
+@login_required
 def channel_view(channel_id):
     c = Channel.query.filter_by(id=channel_id).first()
     plist = c.post_list()
-    user = current_user()
-    if user is not None:
+    # user = current_user()
+    # if user is not None:
         # role = user.role
         # cs = role.channels.all()
         # is_admin = is_administrator(user)
-        return render_template('channel.html', channel=c, posts=plist)
-    else:
-        return redirect(url_for('login_view'))
+    return render_template('channel.html', channel=c, posts=plist)
+    # else:
+    #     return redirect(url_for('login_view'))
 
 
 @app.route('/channel/update/<channel_id>', methods=['POST'])
+@admin_required
 def channel_update(channel_id):
     c = Channel.query.filter_by(id=channel_id).first()
-    u = current_user()
-    if is_administrator(u):
-        c.update(request.form)
-        c.save()
-        return redirect(url_for('channels_roles'))
-    else:
-        abort(401)
+    # u = current_user()
+    # if is_administrator(u):
+    c.update(request.form)
+    c.save()
+    return redirect(url_for('channels_roles'))
+    # else:
+    #     abort(401)
 
 
 @app.route('/post/add', methods=['POST'])
+@login_required
 def post_add():
-    user = current_user()
-    if user is None:
-        return redirect(url_for('login_view'))
-    else:
-        p = Post(request.json)
-        p.user = user
-        p.save()
-        # cid = p.channel_id
-        post = p.post_row()
-        log('post add, dict: ', post)
-        response_data = {
-            'id': post.get('id', ''),
-            'link': post.get('link', ''),
-            'time': post.get('time', ''),
-            'part_content': post.get('part_content', ''),
-            'author_link': post.get('author_link', ''),
-            'is_author': True,
-        }
-        j = json.dumps(response_data, indent=2)
-        log('json dumps post: ', j)
-        return json.dumps(response_data, indent=2)
+    # user = current_user()
+    # if user is None:
+    #     return redirect(url_for('login_view'))
+    # else:
+    p = Post(request.json)
+    p.user = current_user()
+    p.save()
+    # cid = p.channel_id
+    post = p.post_row()
+    log('post add, dict: ', post)
+    response_data = {
+        'id': post.get('id', ''),
+        'link': post.get('link', ''),
+        'time': post.get('time', ''),
+        'part_content': post.get('part_content', ''),
+        'author_link': post.get('author_link', ''),
+        'is_author': True,
+    }
+    j = json.dumps(response_data, indent=2)
+    log('json dumps post: ', j)
+    return json.dumps(response_data, indent=2)
 
         # responseData = {
         #     'channel_name': c.name,
@@ -270,6 +287,7 @@ def post_add():
 
 
 @app.route('/post/delete/<post_id>')
+@login_required
 def post_delete(post_id):
     p = Post.query.filter_by(id=post_id).first()
     cid = p.channel_id
@@ -295,19 +313,21 @@ def post_view(post_id):
 
 
 @app.route('/comment/add', methods=['POST'])
+@login_required
 def comment_add():
-    user = current_user()
-    if user is None:
-        return redirect(url_for('login_view'))
-    else:
-        c = Comment(request.form)
-        c.user = user
-        c.save()
-        # log('comment-post by form:', c.post)
-        return redirect(url_for('post_view', post_id=c.post_id))
+    # user = current_user()
+    # if user is None:
+    #     return redirect(url_for('login_view'))
+    # else:
+    c = Comment(request.form)
+    c.user = current_user()
+    c.save()
+    # log('comment-post by form:', c.post)
+    return redirect(url_for('post_view', post_id=c.post_id))
 
 
 @app.route('/comment/delete/<comment_id>')
+@login_required
 def comment_delete(comment_id):
     c = Comment.query.filter_by(id=comment_id).first()
     pid = c.post_id
@@ -344,6 +364,7 @@ def login():
 
 
 @app.route('/signout/<user_id>')
+@login_required
 def signout(user_id):
     uid = session.get('user_id')
     log('session user id:', uid)
@@ -365,7 +386,9 @@ def login_view():
 @app.route('/register', methods=['POST'])
 def register():
     form = request.form
-    print('注册form: ', form)
+    log('注册form: ', form)
+    log('空username({})'.format(form.get('username')))
+    log('若输入为空,得到的是什么类型?',type(form.get('username')))
     u = User(form)
     u.hash_password(form)
     if u.validate_register():
@@ -392,13 +415,14 @@ def user_view(user_id):
 
 
 @app.route('/user/list')
+@admin_required
 def users():
     users = User.query.all()
-    user = current_user()
-    if is_administrator(user):
-        return render_template('users.html', users=users)
-    else:
-        abort(401)
+    # user = current_user()
+    # if is_administrator(user):
+    return render_template('users.html', users=users)
+    # else:
+    #     abort(401)
 
 
 @app.route('/user/<user_id>/post/list')
@@ -415,33 +439,40 @@ def user_comments(user_id):
     return render_template('comments.html', comments=comments)
 
 
-@app.route('/admin/users')
-def admin_users_view():
-    users = User.query.all()
-    return render_template('admin_users.html', users=users)
+# @app.route('/admin/users')
+# def admin_users_view():
+#     users = User.query.all()
+#     return render_template('admin_users.html', users=users)
 
 
 @app.route('/admin/users/delete/<user_id>')
+@admin_required
 def user_delete(user_id):
     u = User.query.filter_by(id=user_id).first()
-    user = current_user()
-    if user is not None and is_administrator(user):
-        u.delete()
-        return redirect(url_for('admin_users_view'))
-    else:
-        # flash('不好意思,你没有权限访问此页.')
-        abort(401)
+    # user = current_user()
+    # if user is not None and is_administrator(user):
+    u.delete()
+    return redirect(url_for('admin_users_view'))
+    # else:
+    #     # flash('不好意思,你没有权限访问此页.')
+    #     abort(401)
 
 
-@app.route('/admin/users/update/<user_id>')
+@app.route('/user/update/<user_id>')
+@login_required
 def user_update_view(user_id):
-    u = User.query.filter_by(id=user_id).first()
+    # u = User.query.filter_by(id=user_id).first()
     user = current_user()
-    can_edit = u == user or is_administrator(user)
-    return render_template('user_update.html', user=u, can_edit=can_edit)
+    uid = user.id
+    can_edit = user_id == str(uid) or is_administrator(user)
+    log('user_id == uid ?', user_id == str(uid))
+    log('is_administrator(user)?', is_administrator(user))
+    log('can edit?', can_edit)
+    return render_template('user_update.html', can_edit=can_edit)
 
 
-@app.route('/admin/users/update/<user_id>', methods=['POST'])
+@app.route('/user/update/<user_id>', methods=['POST'])
+@login_required
 def user_update(user_id):
     u = User.query.filter_by(id=user_id).first()
     # log('user-update user: ', u)
