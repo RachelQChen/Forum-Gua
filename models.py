@@ -243,8 +243,11 @@ class User(db.Model, Model):
         print('hash-form: ', form)
         psw = form.get('password', '')
         print('password: ', psw)
-        hash1 = hashlib.md5(psw.encode('ascii')).hexdigest()
-        hash2 = hashlib.md5((hash1 + self.salt).encode('ascii')).hexdigest()
+        if len(psw) < 6:
+            hash2 = 'too-short'
+        else:
+            hash1 = hashlib.md5(psw.encode('ascii')).hexdigest()
+            hash2 = hashlib.md5((hash1 + self.salt).encode('ascii')).hexdigest()
         self.password_hash = hash2
 
     @property
@@ -298,7 +301,7 @@ class User(db.Model, Model):
 
     def validate_register(self):
         username_len = len(self.username) >= 6
-        password_len = len(self.password_hash) > 0
+        password_len = self.password_hash != 'too-short'
         if self.validate_username():
             return username_len and password_len
         else:

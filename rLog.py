@@ -11,7 +11,7 @@ def log(*args):
     # for arg in args:
     #     arg_list.append(str(arg))
     # arg_str = '|'.join(arg_list)
-    # with open('log.txt', 'w') as f:
+    # with open('log.txt', 'a') as f:
     #     f.write(time_str + ' ' + arg_str + '\r\n')
     print(formated_time, *args)
     # print(time_str + ' ' + arg_str + '\r\n')
