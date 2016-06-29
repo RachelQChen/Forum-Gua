@@ -38,7 +38,7 @@
                              <a href="/comment/delete/{{ c.id }}"><i class="fa fa-times co-delete"></i></a>
                             {% endif %}
                         </td>
-                        <td>{{ c.time }}</td>
+                        <td>{{ c.time | formatted_time }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

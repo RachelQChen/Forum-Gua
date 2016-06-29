@@ -33,7 +33,7 @@
                         <tr>
                             <td>{{ c.id }}</td>
                             <td>{{ c.link | safe }}</td>
-                            <td>{{ c.time }}</td>
+                            <td>{{ c.time | formatted_time }}</td>
                             {% if is_admin %}
                                 <td class="co-column-width">
                                     <form action="/channel/update/{{ c.id }}" method="post"
@@ -88,8 +88,6 @@
                                 </td>
                                 <td><a href="/role/delete/{{ r.id }}" class="templatemo-link">删除</a></td>
                             {% endif %}
-{#                                <td><a href="" class="templatemo-edit-btn">编辑</a></td>#}
-{#                                <td><a href="/role/delete/{{ r.id }}" class="templatemo-link">删除</a></td>#}
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -101,58 +99,3 @@
     </div>
 {% endblock %}
 
-{#<!DOCTYPE html>#}
-{#<html lang="en">#}
-{#<head>#}
-{#    <meta charset="UTF-8">#}
-{#    <title>Channels</title>#}
-{#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">#}
-{#    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/grids-responsive-min.css">#}
-{#    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>#}
-{#    <script type="text/javascript">#}
-{#        var stripedTable = function() {#}
-{#            $('tbody tr:odd').addClass("pure-table-odd");#}
-{#        };#}
-{##}
-{#        var __main = function() {#}
-{#            stripedTable();#}
-{#        };#}
-{##}
-{#        $(document).ready(function() {#}
-{#            __main();#}
-{#        });#}
-{#    </script>#}
-{##}
-{#    <style type="text/css">#}
-{#        .channels-align {#}
-{#            margin: 0 auto;#}
-{#        }#}
-{#    </style>#}
-{##}
-{#</head>#}
-{#<body>#}
-{#    <a href="/login" class="primary-button pure-button">登录</a>#}
-{#    <table class="pure-table channels-align">#}
-{#        <thead>#}
-{#            <tr>#}
-{#                <th>频道</th>#}
-{#                <th>创建时间</th>#}
-{#                {% if is_admin %}#}
-{#                <th>管理</th>#}
-{#                {% endif %}#}
-{#            </tr>#}
-{#        </thead>#}
-{#        <tbody>#}
-{#            {%  for c in channels %}#}
-{#                <tr>#}
-{#                    <td>{{ c.link | safe }}</td>#}
-{#                    <td>{{ c.time }}</td>#}
-{#                    {% if is_admin %}#}
-{#                        <td><a href="/channel/delete/{{ c.id }}">删除频道</a></td>#}
-{#                    {% endif %}#}
-{#                </tr>#}
-{#            {% endfor %}#}
-{#        </tbody>#}
-{#    </table>#}
-{#</body>#}
-{#</html>#}

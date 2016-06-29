@@ -50,15 +50,17 @@
                         {% endif %}
                         <td>{{ user.comments.count() }}</td>
                     </tr>
-                    {% if can_edit %}
-                        <tr>
-                            <td>
-                                <div class="circle yellow-bg"></div>
-                            </td>
-                            <td><a href="/user/update/{{ user.id }}">编辑用户信息</a></td>
+                    <tr>
+                        <td>
+                            <div class="circle yellow-bg"></div>
+                        </td>
+                        <td>{{ user.created_time | from_now }} 加入</td>
+                        {% if can_edit %}
+                            <td><a href="/user/update/{{ user.id }}">编辑个人信息</a></td>
+                        {% else %}
                             <td>#</td>
-                        </tr>
-                    {% endif %}
+                        {% endif %}
+                    </tr>
                     </tbody>
                 </table>
             </div>

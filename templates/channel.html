@@ -104,7 +104,7 @@
                         <div class="square" style="margin-right: 10px;"></div>
                         <h2 class="templatemo-inline-block">{{ p.link | safe }}</h2>
                         <hr>
-                        <p>{{ p.author_link | safe }} 发表于: {{ p.time }}</p>
+                        <p>{{ p.author_link | safe }} 发表于: {{ p.time | formatted_time }}</p>
                         <p>{{ p.part_content }}</p>
                     </div>
                 {% endfor %}
