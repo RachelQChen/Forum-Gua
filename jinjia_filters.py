@@ -31,24 +31,19 @@ def from_now(timestamp):
     a_week = 60 * 60 * 24 * 7
     a_month = 60 * 60 * 24 * 30
     a_year = 60 * 60 * 24 * 365
-    in_an_hour = now - an_hour
-    in_a_day = now - a_day
-    in_a_week = now - a_week
-    in_a_month = now - a_month
-    in_a_year = now - a_year
-    if timestamp < in_an_hour:
+    if from_now < an_hour:
         from_now_int = int(from_now / a_minute)
         from_now_str = '{} 分钟前'.format(from_now_int)
-    elif timestamp < in_a_day:
+    elif from_now < a_day:
         from_now_int = int(from_now / an_hour)
         from_now_str = '{} 小时前'.format(from_now_int)
-    elif timestamp < in_a_week:
+    elif from_now < a_week:
         from_now_int = int(from_now / a_day)
         from_now_str = '{} 天前'.format(from_now_int)
-    elif timestamp < in_a_month:
+    elif from_now < a_month:
         from_now_int = int(from_now / a_week)
         from_now_str = '{} 周前'.format(from_now_int)
-    elif timestamp < in_a_year:
+    elif from_now < a_year:
         from_now_int = int(from_now / a_month)
         from_now_str = '{} 月前'.format(from_now_int)
     else:
