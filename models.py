@@ -60,24 +60,12 @@ class Role(db.Model, Model):
     def update(self, form):
         self.name = form.get('name', self.name)
 
-    # def add_channel(self, form):
-    #     channels_id = form.getlist(self.name)
-    #     print('在加channels id: ', channels_id)
-    #     for cid in channels_id:
-    #         print('在加cid: ', cid)
-    #         c = Channel.query.filter_by(id=cid).first()
-    #         print('在加 channel: ', c.name)
-    #         self.channels.append(c)
-    #
-    # def remove_channel(self, channel):
-    #     self.channels.remove(channel)
-
 
 class Channel(db.Model, Model):
     __tablename__ = 'channels'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String())
-    created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+    created_time = db.Column(db.Integer, default=0)
     roles = db.relationship('Role',
                             secondary=admins,
                             backref=db.backref('channels', lazy='dynamic'),
@@ -88,6 +76,7 @@ class Channel(db.Model, Model):
         super(Channel, self).__init__()
         # init 里 get 和 验证
         self.name = form.get('name', '')
+        self.created_time = int(time.time())
 
     def update(self, form):
         self.name = form.get('name', self.name)
@@ -135,7 +124,7 @@ class Post(db.Model, Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     channel_id = db.Column(db.String())
-    created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+    created_time = db.Column(db.Integer, default=0)
     title = db.Column(db.String())
     content= db.Column(db.String())
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
@@ -148,6 +137,7 @@ class Post(db.Model, Model):
         self.title = form.get('title', '')
         self.content = form.get('content', '')
         self.channel_id = form.get('channel_id', '')
+        self.created_time = int(time.time())
 
     def post_row(self):
         u = self.user
@@ -186,7 +176,7 @@ class Comment(db.Model, Model):
     __tablename__ = 'comments'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String())
-    created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+    created_time = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
@@ -194,6 +184,7 @@ class Comment(db.Model, Model):
         super(Comment, self).__init__()
         self.content = form.get('content')
         self.post_id = form.get('post_id')
+        self.created_time = int(time.time())
 
     def comment_row(self):
         u = User.query.filter_by(id=self.user_id).first()
@@ -225,7 +216,7 @@ class User(db.Model, Model):
     username = db.Column(db.String())
     password_hash = db.Column(db.String())
     salt = db.Column(db.String())
-    created_time = db.Column(db.DateTime(timezone=True), default=sql.func.now())
+    created_time = db.Column(db.Integer, default=0)
     sex = db.Column(db.String())
     note = db.Column(db.String())
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), default=2)
@@ -238,6 +229,7 @@ class User(db.Model, Model):
         self.sex = form.get('sex', 'male')
         self.note = form.get('note', '')
         self.salt = password_salt()
+        self.created_time = int(time.time())
 
 
     def hash_password(self, form):
