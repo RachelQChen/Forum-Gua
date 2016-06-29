@@ -18,9 +18,17 @@
     <script type="text/javascript">
         var appendNewComment = function(commentJson) {
             var c = commentJson;
-            var commentHtml = '<p>' + c.user_link + ':  ' + c.content +
-                            '   <a href="/comment/delete/' + c.id + '><i class="fa fa-times co-delete"></i></a>' +
-                            '</p>';
+            var commentHtml = (
+                    `
+                        <p>
+                            <span>${ c.user_link }: ${ c.content }</span>
+                            <a class="delete-comment" data-id=${ c.id } ">
+                                <i class="fa fa-times co-delete"></i>
+                            </a>
+                      </p>
+                    `
+            );
+
             var commentList = $('.co-comments');
             console.log('生成的comment html:', commentHtml);
             commentList.append(commentHtml);
@@ -54,8 +62,27 @@
             });
         };
 
+        var deleteComment = function() {
+            $('.delete-comment').on('click', function(){
+                console.log('点击删除文章:', $(this));
+                var comment_id = $(this).data('id');
+                console.log('post_id: ', comment_id);
+                comment = $(this).parentsUntil('#id-comments');
+                console.log('选中父节点:', comment);
+                $.ajax({
+                    url: '/comment/delete/' + comment_id,
+                    type: 'GET',
+                    success: function (cid) {
+                        console.log('已删评论id: ', cid);
+                        comment.remove()
+                    }
+                });
+            });
+        };
+
         var __main = function () {
             addComment();
+            deleteComment();
         };
 
         $(document).ready(function () {
@@ -78,12 +105,12 @@
             <p>{{ post.author_link | safe }} 发表于: {{ post.time }}</p>
             <p>{{ post.content }}</p>
         </div>
-        <div class="co-comments templatemo-content-widget white-bg col-2">
+        <div id="id-comments" class="co-comments templatemo-content-widget white-bg col-2">
             {% for c in post.comment_list %}
                 <p>
                     {{ c.user_link | safe }}: {{ c.content }}
                     {% if is_admin or c.is_author(current_user) %}
-                        <a href="/comment/delete/{{ c.id }}"><i class="fa fa-times co-delete"></i></a>
+                        <a class="delete-comment" data-id="{{ c.id }}"><i class="fa fa-times co-delete"></i></a>
                     {% endif %}
                 </p>
             {% endfor %}

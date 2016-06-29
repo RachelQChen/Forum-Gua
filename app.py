@@ -215,12 +215,13 @@ def comment_add():
 @login_required
 def comment_delete(comment_id):
     c = Comment.query.filter_by(id=comment_id).first()
-    pid = c.post_id
+    cid = c.id
     user = current_user()
     can_delete = c.is_author()(user) or is_administrator(user)
     if can_delete:
         c.delete()
-        return redirect(url_for('post_view', post_id=pid))
+        data = {'cid': cid}
+        return json.dumps(data, indent=2)
     else:
         abort(401)
 
@@ -321,7 +322,7 @@ def user_comments(user_id):
     return render_template('comments.html', comments=comments)
 
 
-@app.route('/admin/users/delete/<user_id>')
+@app.route('/user/delete/<user_id>')
 @admin_required
 def user_delete(user_id):
     u = User.query.filter_by(id=user_id).first()

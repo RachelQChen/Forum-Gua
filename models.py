@@ -141,6 +141,7 @@ class Post(db.Model, Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
+
     def __init__(self, form):
         super(Post, self).__init__()
         # init 里 get 和 验证
