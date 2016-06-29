@@ -198,9 +198,11 @@ def post_view(post_id):
 @login_required
 def comment_add():
     c = Comment(request.json)
+    log('comment request.json:', request.json)
     c.user = current_user()
     c.save()
     comment = c.comment_row()
+    log('新增Comment:', c)
     log('comment add, dict: ', comment)
     response_data = {
         'id': comment.get('id', ''),

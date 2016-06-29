@@ -25,11 +25,11 @@
                             <a class="delete-comment" data-id=${ c.id } ">
                                 <i class="fa fa-times co-delete"></i>
                             </a>
-                      </p>
+                        </p>
                     `
             );
 
-            var commentList = $('.co-comments');
+            var commentList = $('#id-comments');
             console.log('生成的comment html:', commentHtml);
             commentList.append(commentHtml);
         };
@@ -63,8 +63,8 @@
         };
 
         var deleteComment = function() {
-            $('.delete-comment').on('click', function(){
-                console.log('点击删除文章:', $(this));
+            $('#id-comments').on('click', 'a', function(){
+                console.log('点击删除评论:', $(this));
                 var comment_id = $(this).data('id');
                 console.log('post_id: ', comment_id);
                 comment = $(this).parentsUntil('#id-comments');
@@ -105,10 +105,12 @@
             <p>{{ post.author_link | safe }} 发表于: {{ post.time }}</p>
             <p>{{ post.content }}</p>
         </div>
-        <div id="id-comments" class="co-comments templatemo-content-widget white-bg col-2">
+        <div id="id-comments" class="templatemo-content-widget white-bg col-2">
             {% for c in post.comment_list %}
                 <p>
-                    {{ c.user_link | safe }}: {{ c.content }}
+                    <span>
+                        {{ c.user_link | safe }}: {{ c.content }}
+                    </span>
                     {% if is_admin or c.is_author(current_user) %}
                         <a class="delete-comment" data-id="{{ c.id }}"><i class="fa fa-times co-delete"></i></a>
                     {% endif %}

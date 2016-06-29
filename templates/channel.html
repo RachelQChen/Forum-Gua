@@ -60,7 +60,7 @@
         };
 
         var deletePost = function() {
-            $('.delete-post').on('click', function(){
+            $('#id-posts').on('click', 'a', function(){
                 console.log('点击删除文章:', $(this));
                 var post_id = $(this).data('id');
                 console.log('post_id: ', post_id);
