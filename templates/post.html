@@ -6,10 +6,14 @@
 {% endblock %}
 
 {% block style %}
-    <style type="text/css">
+    <style type="text/css" xmlns="http://www.w3.org/1999/html">
         .co-delete {
             position: inherit;
             float: right;
+        }
+        .co-time {
+            color: gray;
+            margin-top: 5px;
         }
     </style>
 {% endblock %}
@@ -20,12 +24,14 @@
             var c = commentJson;
             var commentHtml = (
                     `
-                        <p>
+                        <div>
                             <span>${ c.user_link }: ${ c.content }</span>
                             <a class="delete-comment" data-id=${ c.id } ">
                                 <i class="fa fa-times co-delete"></i>
                             </a>
-                        </p>
+                            <p class="co-time">${ c.time }</p>
+                            <hr>
+                        </div>
                     `
             );
 
@@ -102,19 +108,21 @@
             <div class="square"></div>
             <h2 class="templatemo-inline-block">{{ post.link | safe }}</h2>
             <hr>
-            <p>{{ post.author_link | safe }} 发表于: {{ post.time }}</p>
+            <p>{{ post.author_link | safe }} 发表于: {{ post.time | formatted_time }}</p>
             <p>{{ post.content }}</p>
         </div>
         <div id="id-comments" class="templatemo-content-widget white-bg col-2">
             {% for c in post.comment_list %}
-                <p>
+                <div>
                     <span>
                         {{ c.user_link | safe }}: {{ c.content }}
                     </span>
                     {% if is_admin or c.is_author(current_user) %}
                         <a class="delete-comment" data-id="{{ c.id }}"><i class="fa fa-times co-delete"></i></a>
                     {% endif %}
-                </p>
+                    <p class="co-time">{{ c.time | from_now }}</p>
+                    <hr>
+                </div>
             {% endfor %}
         </div>
     </div>
