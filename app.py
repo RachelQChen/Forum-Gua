@@ -169,10 +169,12 @@ def post_add():
     p.save()
     post = p.post_row()
     log('post add, dict: ', post)
+    t = post.get('time', '')
+    ft = formatted_time(t)
     response_data = {
         'id': post.get('id', ''),
         'link': post.get('link', ''),
-        'time': post.get('time', ''),
+        'time': ft,
         'part_content': post.get('part_content', ''),
         'author_link': post.get('author_link', ''),
         'is_author': True,
@@ -212,10 +214,12 @@ def comment_add():
     comment = c.comment_row()
     log('新增Comment:', c)
     log('comment add, dict: ', comment)
+    t = comment.get('time', '')
+    ft = from_now(t)
     response_data = {
         'id': comment.get('id', ''),
         'user_link': comment.get('user_link', ''),
-        'time': comment.get('time', ''),
+        'time': ft,
         'content': comment.get('content', ''),
     }
     return json.dumps(response_data, indent=2)
