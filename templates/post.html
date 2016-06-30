@@ -29,6 +29,12 @@
         #id-div-edit-post {
             display: none;
         }
+        .co-edit-time {
+            color: gray;
+        }
+        .disable {
+            display: none;
+        }
     </style>
 {% endblock %}
 
@@ -110,7 +116,9 @@
         };
 
         var saveEditedPost = function () {
-            $('#id-button-submit-edit-post').on('click', function () {
+            var editDiv = $('#id-textpost-editpost');
+            var submitChange = $('#id-button-submit-edit-post');
+            editDiv.on('click', submitChange, function () {
 
                 var newContent = $('#id-text-edit-post-content').val();
                 console.log('修改后内容:', newContent);
@@ -131,9 +139,10 @@
                 var appendEditTime = function(time) {
                     var timeHtml = (
                             `
-                                <p>${ time }</p>
+                                <p class="co-edit-time">编辑于: ${ time }</p>
                             `
                     );
+                    $('.co-edit-time').addClass('disable');
                     postText.append(timeHtml)
                 };
                 var request = {
@@ -184,13 +193,14 @@
                         <span id="id-action-edit-post">编辑</span>
                     </p>
                     <p id="id-text-post-content">{{ post.content }}</p>
+                    {% if show_time %}
+                        <p class="co-edit-time">编辑于: {{ post.edited_time | formatted_time }}</p>
+                    {% endif %}
                 </div>
                 <div id="id-div-edit-post" class="row form-group">
                     <div class="col-lg-12 form-group">
                         <p>{{  post.title }}</p>
-                        <textarea class="form-control" id="id-text-edit-post-content" rows="3" name="content">
-                            {{  post.content }}
-                        </textarea>
+                        <textarea class="form-control" id="id-text-edit-post-content" rows="3" name="content">{{  post.content }}</textarea>
                         <p></p>
                         <button id="id-button-submit-edit-post" class="templatemo-blue-button float-right">保 存</button>
                     </div>

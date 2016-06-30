@@ -221,7 +221,10 @@ def post_update(post_id):
 def post_view(post_id):
     p = Post.query.filter_by(id=post_id).first()
     post = p.post_row()
-    return render_template('post.html', post=post)
+    show_time = True
+    if p.edited_time == 0:
+        show_time = False
+    return render_template('post.html', post=post, show_time=show_time)
 
 
 @app.route('/comment/add', methods=['POST'])

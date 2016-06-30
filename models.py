@@ -155,6 +155,7 @@ class Post(db.Model, Model):
             'link': plink,
             'title': self.title,
             'time': self.created_time,
+            'edited_time': self.edited_time,
             'part_content': part_content,
             'author_link': author_link,
             'is_author': self.is_author(),
