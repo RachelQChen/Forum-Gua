@@ -9,6 +9,7 @@ import uuid
 
 from rlog import log
 
+
 db_path = 'models.db'
 app = Flask(__name__)
 app.secret_key = 'asdjf1923'
@@ -147,6 +148,7 @@ class Post(db.Model, Model):
         pr = {
             'id': self.id,
             'link': plink,
+            'title': self.title,
             'time': self.created_time,
             'part_content': part_content,
             'author_link': author_link,
