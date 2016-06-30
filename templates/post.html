@@ -11,18 +11,22 @@
             position: inherit;
             float: right;
         }
+
         .co-time {
             color: gray;
             margin-top: 5px;
         }
+
         #id-text-post-time {
             margin-left: 6px;
         }
+
         #id-action-edit-post {
             margin-left: 10px;
             color: gray;
         }
-        #id-hide-post-channel-id {
+
+        #id-div-edit-post {
             display: none;
         }
     </style>
@@ -30,7 +34,7 @@
 
 {% block script %}
     <script type="text/javascript">
-        var appendNewComment = function(commentJson) {
+        var appendNewComment = function (commentJson) {
             var c = commentJson;
             var commentHtml = (
                     `
@@ -71,15 +75,15 @@
                     success: function (d) {
                         commentJson = JSON.parse(d);
                         console.log('已加评论: ', commentJson);
-                        console.log('c.id:',commentJson.id);
+                        console.log('c.id:', commentJson.id);
                         appendNewComment(commentJson);
                     }
                 });
             });
         };
 
-        var deleteComment = function() {
-            $('#id-comments').on('click', 'a', function(){
+        var deleteComment = function () {
+            $('#id-comments').on('click', 'a', function () {
                 console.log('点击删除评论:', $(this));
                 var comment_id = $(this).data('id');
                 console.log('post_id: ', comment_id);
@@ -96,50 +100,38 @@
             });
         };
 
+        var postDiv = $('#id-textpost-editpost');
 
-        var editPostTemplate = function(post) {
-            var p = post;
-            var editPostHtml = (
-                `
-                    <div id="id-div-edit-post" class="row form-group">
-                        <div class="col-lg-12 form-group">
-                            <p>${ p.title }</p>
-                            <textarea class="form-control" id="id-text-edit-post-content" rows="3" name="content">
-                                <p>${ p.content }</p>
-                            </textarea>
-                            <p></p>
-                            <button id="id-button-submit-edit-post" class="templatemo-blue-button float-right">保 存</button>
-                        </div>
-                    </div>
-                `
-            );
-            return editPostHtml;
-        };
-
-        var editPost = function() {
-            $('#id-action-edit-post').on('click', function() {
-                var title = $('#id-text-post-title').data('title');
-                var content = $('#id-text-post-content').data('content');
-                var post = {
-                    title: title,
-                    content: content,
-                };
+        var editPost = function () {
+            $('#id-action-edit-post').on('click', function () {
                 $('#id-text-post').hide();
-                $('#id-textpost-editpost').append(editPostTemplate(post))
+                $('#id-div-edit-post').show();
             });
         };
 
-        var saveEditedPost = function() {
-            var savePost = $('#id-button-submit-edit-post');
-            var postDiv = $('#id-textpost-editpost');
-            postDiv.on('click', savePost, function() {
-                $('#id-div-edit-post').hide();
-                var newContent = $('#id-text-edit-post-content').val();
-                var postContent = $('#id-text-post-content');
+        var saveEditedPost = function () {
+            var newContent = $('#id-text-edit-post-content').val();
+            var postContent = $('#id-text-post-content');
+            $('#id-button-submit-edit-post').on('click', function () {
                 postContent.text(newContent);
-                var p = $('#id-text-post');
-                p.show();
-            })
+                $('#id-div-edit-post').hide();
+                $('#id-text-post').show();
+            });
+            var postData = {
+                content: newContent,
+            };
+            var post_id = $('#id-text-post').data('id');
+            var request = {
+                url: '/post/edit/' + post_id,
+                type: 'post',
+                contentType: 'application/json',
+                data: postData,
+                success: function(data) {
+                    r = JSON.parse(data);
+                    console.log('编辑成功:', r);
+                }
+            }
+            $.ajax(request);
         };
 
         var __main = function () {
@@ -157,46 +149,57 @@
 
 {% block main_content_body %}
     <div class="templatemo-content-container">
-    <div class="templatemo-flex-row flex-content-row">
-        <div id="id-textpost-editpost" class="templatemo-content-widget white-bg col-2">
-            <div id="id-text-post">
-                {% if is_admin or post.is_author(current_user) %}
-                <a href="/post/delete/{{ post.id }}"><i class="fa fa-times"></i></a>
-                {% endif %}
+        <div class="templatemo-flex-row flex-content-row">
+            <div id="id-textpost-editpost" class="templatemo-content-widget white-bg col-2">
+                <div id="id-text-post" data-id="{{ post.id }}">
+                    {% if is_admin or post.is_author(current_user) %}
+                        <a href="/post/delete/{{ post.id }}"><i class="fa fa-times"></i></a>
+                    {% endif %}
 
-                <div class="square"></div>
-                <h2 class="templatemo-inline-block" id="id-text-post-title" data-title="{{ post.title }}">{{ post.link | safe }}</h2>
-                <hr>
-                <p>
-                    <span>{{ post.author_link | safe }} </span>
-                    <span id="id-text-post-time">发表于: {{ post.time | formatted_time }}</span>
-                    <span id="id-action-edit-post">编辑</span>
-                </p>
-                <p id="id-text-post-content" data-content="{{ post.content }}" >{{ post.content }}</p>
+                    <div class="square"></div>
+                    <h2 class="templatemo-inline-block" id="id-text-post-title"
+                        data-title="{{ post.title }}">{{ post.link | safe }}</h2>
+                    <hr>
+                    <p>
+                        <span>{{ post.author_link | safe }} </span>
+                        <span id="id-text-post-time">发表于: {{ post.time | formatted_time }}</span>
+                        <span id="id-action-edit-post">编辑</span>
+                    </p>
+                    <p id="id-text-post-content" data-content="{{ post.content }}">{{ post.content }}</p>
+                </div>
+                <div id="id-div-edit-post" class="row form-group">
+                    <div class="col-lg-12 form-group">
+                        <p>{{  post.title }}</p>
+                        <textarea class="form-control" id="id-text-edit-post-content" rows="3" name="content">
+                            {{  post.content }}
+                        </textarea>
+                        <p></p>
+                        <button id="id-button-submit-edit-post" class="templatemo-blue-button float-right">保 存</button>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div id="id-comments" class="templatemo-content-widget white-bg col-2">
-            {% for c in post.comment_list %}
-                <div>
+            <div id="id-comments" class="templatemo-content-widget white-bg col-2">
+                {% for c in post.comment_list %}
+                    <div>
                     <span>
                         {{ c.user_link | safe }}: {{ c.content }}
                     </span>
-                    {% if is_admin or c.is_author(current_user) %}
-                        <a class="delete-comment" data-id="{{ c.id }}"><i class="fa fa-times co-delete"></i></a>
-                    {% endif %}
-                    <p class="co-time">{{ c.time | from_now }}</p>
-                    <hr>
-                </div>
-            {% endfor %}
+                        {% if is_admin or c.is_author(current_user) %}
+                            <a class="delete-comment" data-id="{{ c.id }}"><i class="fa fa-times co-delete"></i></a>
+                        {% endif %}
+                        <p class="co-time">{{ c.time | from_now }}</p>
+                        <hr>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
-    </div>
-    {% if current_user is not none %}
-        <fieldset class="col-lg-12 form-group">
-            <label for="id-text-comment-content"></label>
+        {% if current_user is not none %}
+            <fieldset class="col-lg-12 form-group">
+                <label for="id-text-comment-content"></label>
             <textarea class="form-control" id="id-text-comment-content" rows="3" placeholder="添加评论..." name="content"
                       required></textarea>
-            <input type="hidden" id="id-post-id" name="post_id" value="{{ post.id }}">
-            <button id="id-button-write-comment" class="templatemo-blue-button float-right">评 论</button>
-        </fieldset>
-    {% endif %}
+                <input type="hidden" id="id-post-id" name="post_id" value="{{ post.id }}">
+                <button id="id-button-write-comment" class="templatemo-blue-button float-right">评 论</button>
+            </fieldset>
+        {% endif %}
 {% endblock %}
