@@ -110,28 +110,46 @@
         };
 
         var saveEditedPost = function () {
-            var newContent = $('#id-text-edit-post-content').val();
-            var postContent = $('#id-text-post-content');
             $('#id-button-submit-edit-post').on('click', function () {
-                postContent.text(newContent);
-                $('#id-div-edit-post').hide();
-                $('#id-text-post').show();
+
+                var newContent = $('#id-text-edit-post-content').val();
+                console.log('修改后内容:', newContent);
+
+                var postText = $('#id-text-post');
+
+                var togglePost = function() {
+                    var postContent = $('#id-text-post-content');
+                    postContent.text(newContent);
+                    $('#id-div-edit-post').hide();
+                    postText.show();
+                };
+
+                var postData = {
+                    content: newContent,
+                };
+                var post_id = postText.data('pid');
+                var appendEditTime = function(time) {
+                    var timeHtml = (
+                            `
+                                <p>${ time }</p>
+                            `
+                    );
+                    postText.append(timeHtml)
+                };
+                var request = {
+                    url: '/post/update/' + post_id,
+                    type: 'post',
+                    contentType: 'application/json',
+                    data: JSON.stringify(postData),
+                    success: function(data) {
+                        r = JSON.parse(data);
+                        console.log('编辑成功:', r);
+                        appendEditTime(r.post_edited_time);
+                    }
+                };
+                togglePost();
+                $.ajax(request);
             });
-            var postData = {
-                content: newContent,
-            };
-            var post_id = $('#id-text-post').data('id');
-            var request = {
-                url: '/post/edit/' + post_id,
-                type: 'post',
-                contentType: 'application/json',
-                data: postData,
-                success: function(data) {
-                    r = JSON.parse(data);
-                    console.log('编辑成功:', r);
-                }
-            }
-            $.ajax(request);
         };
 
         var __main = function () {
@@ -151,7 +169,7 @@
     <div class="templatemo-content-container">
         <div class="templatemo-flex-row flex-content-row">
             <div id="id-textpost-editpost" class="templatemo-content-widget white-bg col-2">
-                <div id="id-text-post" data-id="{{ post.id }}">
+                <div id="id-text-post" data-pid="{{ post.id }}">
                     {% if is_admin or post.is_author(current_user) %}
                         <a href="/post/delete/{{ post.id }}"><i class="fa fa-times"></i></a>
                     {% endif %}
@@ -165,7 +183,7 @@
                         <span id="id-text-post-time">发表于: {{ post.time | formatted_time }}</span>
                         <span id="id-action-edit-post">编辑</span>
                     </p>
-                    <p id="id-text-post-content" data-content="{{ post.content }}">{{ post.content }}</p>
+                    <p id="id-text-post-content">{{ post.content }}</p>
                 </div>
                 <div id="id-div-edit-post" class="row form-group">
                     <div class="col-lg-12 form-group">

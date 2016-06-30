@@ -130,6 +130,7 @@ class Post(db.Model, Model):
     content= db.Column(db.String())
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    edited_time = db.Column(db.Integer, default=0)
 
 
     def __init__(self, form):
@@ -139,6 +140,10 @@ class Post(db.Model, Model):
         self.content = form.get('content', '')
         self.channel_id = form.get('channel_id', '')
         self.created_time = int(time.time())
+
+    def update(self, form):
+        self.content = form.get('content', '')
+        self.edited_time = int(time.time())
 
     def post_row(self):
         u = self.user

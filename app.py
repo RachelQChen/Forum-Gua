@@ -75,7 +75,7 @@ def admin_view():
 @app.route('/admin', methods=['POST'])
 @admin_required
 def admin():
-    option_json = request.json
+    option_json = request.get_json()
     Channel.update_roles(option_json)
     response_data = cid_rid_for_cookie()
     return json.dumps(response_data, indent=2)
@@ -84,7 +84,7 @@ def admin():
 @app.route('/role/add', methods=['POST'])
 @admin_required
 def role_add():
-    j = request.json
+    j = request.get_json()
     log('role-add json', type(j), j)
     r = Role(j)
     log('new role: ', r)
@@ -124,7 +124,7 @@ def channels_roles():
 @app.route('/channel/add', methods=['POST'])
 @admin_required
 def channel_add():
-    j = request.json
+    j = request.get_json()
     c = Channel(j)
     c.save()
     responseData = {
@@ -164,7 +164,7 @@ def channel_update(channel_id):
 @app.route('/post/add', methods=['POST'])
 @login_required
 def post_add():
-    p = Post(request.json)
+    p = Post(request.get_json())
     p.user = current_user()
     p.save()
     post = p.post_row()
@@ -197,6 +197,26 @@ def post_delete(post_id):
         abort(401)
 
 
+@app.route('/post/update/<post_id>', methods=['POST'])
+@login_required
+def post_update(post_id):
+    p = Post.query.filter_by(id=post_id).first()
+    j = request.get_json()
+    user = current_user()
+    if p.is_author()(user) or is_administrator(user):
+        p.update(j)
+        p.save()
+        edited_time = formatted_time(p.edited_time)
+        response_data = {
+            'post_id': p.id,
+            'post_content': p.content,
+            'post_edited_time': edited_time,
+        }
+        return json.dumps(response_data, indent=2)
+    else:
+        abort(401)
+
+
 @app.route('/post/<post_id>')
 def post_view(post_id):
     p = Post.query.filter_by(id=post_id).first()
@@ -207,8 +227,9 @@ def post_view(post_id):
 @app.route('/comment/add', methods=['POST'])
 @login_required
 def comment_add():
-    c = Comment(request.json)
-    log('comment request.json:', request.json)
+    j = request.get_json()
+    c = Comment(j)
+    log('comment request.get_json():', j)
     c.user = current_user()
     c.save()
     comment = c.comment_row()
