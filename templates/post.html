@@ -24,11 +24,9 @@
         #id-action-edit-post {
             margin-left: 10px;
             color: gray;
+            cursor:pointer;
         }
 
-        #id-div-edit-post {
-            display: none;
-        }
         .co-edit-time {
             color: gray;
         }
@@ -39,6 +37,7 @@
 {% endblock %}
 
 {% block script %}
+{#    http://vip.cocode.cc/guacode/code/694#}
     <script type="text/javascript">
         var appendNewComment = function (commentJson) {
             var c = commentJson;
@@ -61,115 +60,117 @@
         };
 
         var addComment = function () {
-            $('#id-button-write-comment').on('click', function () {
-                console.log('点击增加评论');
-                var content = $('#id-text-comment-content').val();
-                console.log('新评论内容: ', content);
-                var post_id = $('#id-post-id').val();
-                console.log('评论所属文章: ', post_id);
-                var data = {
-                    content: content,
-                    post_id: post_id,
-                };
-                postData = JSON.stringify(data);
-                console.log('postData: ', postData);
-                $.ajax({
-                    url: '/comment/add',
-                    type: 'POST',
-                    data: postData,
-                    contentType: 'application/json',
-                    success: function (d) {
-                        commentJson = JSON.parse(d);
-                        console.log('已加评论: ', commentJson);
-                        console.log('c.id:', commentJson.id);
-                        appendNewComment(commentJson);
-                    }
-                });
+            console.log('点击增加评论');
+            var content = $('#id-text-comment-content').val();
+            console.log('新评论内容: ', content);
+            var post_id = $('#id-post-id').val();
+            console.log('评论所属文章: ', post_id);
+            var data = {
+                content: content,
+                post_id: post_id,
+            };
+            postData = JSON.stringify(data);
+            console.log('postData: ', postData);
+            $.ajax({
+                url: '/comment/add',
+                type: 'POST',
+                data: postData,
+                contentType: 'application/json',
+                success: function (d) {
+                    commentJson = JSON.parse(d);
+                    console.log('已加评论: ', commentJson);
+                    console.log('c.id:', commentJson.id);
+                    appendNewComment(commentJson);
+                }
             });
         };
 
-        var deleteComment = function () {
-            $('#id-comments').on('click', 'a', function () {
-                console.log('点击删除评论:', $(this));
-                var comment_id = $(this).data('id');
-                console.log('post_id: ', comment_id);
-                comment = $(this).parentsUntil('#id-comments');
-                console.log('选中父节点:', comment);
-                $.ajax({
-                    url: '/comment/delete/' + comment_id,
-                    type: 'GET',
-                    success: function (cid) {
-                        console.log('已删评论id: ', cid);
-                        comment.remove()
-                    }
-                });
+        var deleteComment = function (that) {
+            var comment_id = that.data('id');
+            console.log('post_id: ', comment_id);
+            comment = that.parentsUntil('#id-comments');
+            console.log('选中父节点:', comment);
+            $.ajax({
+                url: '/comment/delete/' + comment_id,
+                type: 'GET',
+                success: function (cid) {
+                    console.log('已删评论id: ', cid);
+                    comment.remove()
+                }
             });
         };
 
-        var postDiv = $('#id-textpost-editpost');
 
-        var editPost = function () {
-            $('#id-action-edit-post').on('click', function () {
-                $('#id-text-post').hide();
-                $('#id-div-edit-post').show();
-            });
+        var toggleEdit = function () {
+            $('#id-text-post').hide();
+            $('#id-edit-post').show();
         };
 
         var saveEditedPost = function () {
-            var editDiv = $('#id-textpost-editpost');
-            var submitChange = $('#id-button-submit-edit-post');
-            editDiv.on('click', submitChange, function () {
+            var newContent = $('#id-text-edit-post-content').val();
+            console.log('修改后内容:', newContent);
 
-                var newContent = $('#id-text-edit-post-content').val();
-                console.log('修改后内容:', newContent);
+            var postText = $('#id-text-post');
 
-                var postText = $('#id-text-post');
+            var togglePost = function() {
+                var postContent = $('#id-text-post-content');
+                postContent.text(newContent);
+                $('#id-edit-post').hide();
+                postText.show();
+            };
 
-                var togglePost = function() {
-                    var postContent = $('#id-text-post-content');
-                    postContent.text(newContent);
-                    $('#id-div-edit-post').hide();
-                    postText.show();
-                };
-
-                var postData = {
-                    content: newContent,
-                };
-                var post_id = postText.data('pid');
-                var appendEditTime = function(time) {
-                    var timeHtml = (
-                            `
-                                <p class="co-edit-time">编辑于: ${ time }</p>
-                            `
-                    );
-                    $('.co-edit-time').addClass('disable');
-                    postText.append(timeHtml)
-                };
-                var request = {
-                    url: '/post/update/' + post_id,
-                    type: 'post',
-                    contentType: 'application/json',
-                    data: JSON.stringify(postData),
-                    success: function(data) {
-                        r = JSON.parse(data);
-                        console.log('编辑成功:', r);
-                        appendEditTime(r.post_edited_time);
-                    }
-                };
-                togglePost();
-                $.ajax(request);
-            });
+            var postData = {
+                content: newContent,
+            };
+            var post_id = postText.data('pid');
+            var appendEditTime = function(time) {
+                var timeHtml = (
+                        `
+                            <p class="co-edit-time">编辑于: ${ time }</p>
+                        `
+                );
+                $('.co-edit-time').addClass('disable');
+                postText.append(timeHtml)
+            };
+            var request = {
+                url: '/post/update/' + post_id,
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify(postData),
+                success: function(data) {
+                    r = JSON.parse(data);
+                    console.log('编辑成功:', r);
+                    appendEditTime(r.post_edited_time);
+                }
+            };
+            togglePost();
+            $.ajax(request);
         };
 
-        var __main = function () {
-            addComment();
-            deleteComment();
-            editPost();
-            saveEditedPost();
-        };
 
         $(document).ready(function () {
-            __main();
+            var addCommentButton = $('#id-button-write-comment');
+            addCommentButton.on('click', function() {
+                addComment();
+            });
+
+            var commentsDiv = $('#id-comments');
+            commentsDiv.on('click', 'a', function () {
+                console.log('点击删除评论:', $(this));
+                var that = $(this);
+                deleteComment(that);
+            });
+
+            var postDiv = $('#id-textpost-editpost');
+
+            postDiv.on('click', '#id-action-edit-post', function() {
+                console.log('点击开始切换编辑');
+                toggleEdit();
+            }).on('click', '#id-button-save-change', function () {
+                console.log('保存修改.');
+                saveEditedPost();
+            });
+
         });
     </script>
 {% endblock %}
@@ -197,12 +198,12 @@
                         <p class="co-edit-time">编辑于: {{ post.edited_time | formatted_time }}</p>
                     {% endif %}
                 </div>
-                <div id="id-div-edit-post" class="row form-group">
+                <div id="id-edit-post" class="row form-group disable">
                     <div class="col-lg-12 form-group">
                         <p>{{  post.title }}</p>
                         <textarea class="form-control" id="id-text-edit-post-content" rows="3" name="content">{{  post.content }}</textarea>
                         <p></p>
-                        <button id="id-button-submit-edit-post" class="templatemo-blue-button float-right">保 存</button>
+                        <button id="id-button-save-change" class="templatemo-blue-button float-right">保 存</button>
                     </div>
                 </div>
             </div>
